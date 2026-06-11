@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AP Business Vocabulary Hub — Mr. D's Class</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #root { height: 100%; width: 100%; }
+    body { font-family: 'Poppins', sans-serif; -webkit-font-smoothing: antialiased; }
+    button { font-family: inherit; }
+    input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useCallback, useRef } = React;
+
+// ─── VOCABULARY DATA (directly from AP Business CED) ─────────────────────────
+const UNITS = [
+  {
+    id: 1,
+    title: "Businesses, Competition, & New Ideas",
+    examWeight: "20–30%",
+    classPeriods: "~37",
+    color: "#009CDC",
+    summary: "How businesses start, compete, and navigate external forces.",
+    vocab: [
+      {
+        term: "Business",
+        definition: "An organization or entity that produces and distributes products, inclusive of goods and/or services.",
+        example: "Bombas started as a small startup selling socks and grew into a national brand by addressing a customer need.",
+        eli5: "A business is like a lemonade stand — someone makes something and sells it to people who want it."
+      },
+      {
+        term: "Customer",
+        definition: "An individual or business that purchases a good or service.",
+        example: "When you buy a pair of sneakers from Nike, you are Nike's customer.",
+        eli5: "A customer is the person who pays money to buy something from a store or company."
+      },
+      {
+        term: "Consumer",
+        definition: "An individual who uses a good or service, whether or not they are the buyer.",
+        example: "A parent buys cereal (customer), but their child eats it (consumer).",
+        eli5: "The consumer is the person who actually uses the thing — even if someone else bought it for them."
+      },
+      {
+        term: "Problem-Solution Fit",
+        definition: "When a business develops goods and services that successfully address customer problems, needs, and wants.",
+        example: "Uber achieved problem-solution fit by solving the difficulty of hailing a cab with a simple app.",
+        eli5: "It's when a company figures out exactly what people need and makes the perfect thing to fix it."
+      },
+      {
+        term: "Value",
+        definition: "The worth or benefit of a product to customers.",
+        example: "A winter coat's value goes beyond its price — it keeps you warm and protected in harsh weather.",
+        eli5: "Value is how useful or important something is to you — like how much you love your favorite toy."
+      },
+      {
+        term: "Value Creation",
+        definition: "When businesses provide a product that responds to customers' problems, needs, and wants.",
+        example: "Spotify created value by giving people instant access to millions of songs in one app.",
+        eli5: "It's when a company makes something that actually helps people or makes their life better."
+      },
+      {
+        term: "Value Capture",
+        definition: "When businesses are able to charge customers a higher price for a product than it cost to produce.",
+        example: "Apple captures value by charging $999 for an iPhone that costs roughly $500 to manufacture.",
+        eli5: "It's when a company charges more than it costs to make something — that extra money is their reward."
+      },
+      {
+        term: "Market",
+        definition: "Any physical or virtual space where businesses (sellers) interact with their customers (buyers).",
+        example: "Amazon.com is a virtual market; a farmers' market is a physical one.",
+        eli5: "A market is anywhere people go to buy and sell stuff — like a store, a website, or even a yard sale."
+      },
+      {
+        term: "Voluntary Exchange",
+        definition: "The exchange of goods and services within markets that generates revenue for sellers and creates value for buyers.",
+        example: "You pay $5 for a coffee because you value the coffee more than $5, and the shop values $5 more than the coffee.",
+        eli5: "It's a trade where both sides are happy — you get what you want, and they get what they want."
+      },
+      {
+        term: "Market Price",
+        definition: "The prevailing price for a good or service established by the interaction of sellers seeking higher prices and buyers seeking lower prices.",
+        example: "Gas prices settle around a market price based on what stations charge and what drivers are willing to pay.",
+        eli5: "It's the price that everyone kind of agrees on — not too high for buyers, not too low for sellers."
+      },
+      {
+        term: "Competitive Advantage",
+        definition: "The ability to outperform rivals in the same market, leading to increased market share and potentially increased profits.",
+        example: "Tesla's competitive advantage comes from its brand, battery technology, and direct-to-consumer sales model.",
+        eli5: "It's your superpower that makes you better than everyone else selling the same kind of thing."
+      },
+      {
+        term: "Differentiated Products",
+        definition: "Products with distinguishing features that set them apart from competitors' offerings.",
+        example: "Dyson vacuums differentiate with cyclone suction technology and a sleek design.",
+        eli5: "It's when your product is special or different from everyone else's — like adding sprinkles to your lemonade."
+      },
+      {
+        term: "Barriers to Entry",
+        definition: "Obstacles that make it difficult for new firms to compete in a market, such as patents, high startup costs, or regulations.",
+        example: "The pharmaceutical industry has high barriers to entry due to patents and FDA approval requirements.",
+        eli5: "Barriers to entry are like a super tall fence around a playground — it's really hard for new kids to get in."
+      },
+      {
+        term: "Monopoly",
+        definition: "A market without competition, in which only one business operates and produces a unique good or service.",
+        example: "A local utility company is often a monopoly — there's only one provider of electricity in your area.",
+        eli5: "It's when only one company sells something and nobody else is allowed to compete with them."
+      },
+      {
+        term: "PESTEL Factors",
+        definition: "Political, Economic, Social, Technological, Environmental, and Legal factors that shape the business landscape and impact business viability.",
+        example: "A new environmental regulation (Legal/Environmental) might force a factory to invest in cleaner technology.",
+        eli5: "PESTEL is like the weather for businesses — all the outside stuff (laws, technology, trends) that affects how they do."
+      },
+      {
+        term: "Entrepreneur",
+        definition: "An individual who develops a new business and assumes the risks and potential rewards.",
+        example: "Sara Blakely was an entrepreneur who created Spanx with $5,000 in savings and grew it into a billion-dollar company.",
+        eli5: "An entrepreneur is someone brave enough to start their own business — they take a big chance hoping it works out."
+      },
+      {
+        term: "Minimum Viable Product (MVP)",
+        definition: "The simplest version of a product idea, with only core features, used to gather initial feedback from potential customers. May be a sketch, description, or model.",
+        example: "Dropbox's MVP was a simple video explaining how the service would work — before they even built it.",
+        eli5: "An MVP is the simplest, quickest version of your idea that you show people to see if they even like it."
+      },
+      {
+        term: "Core Values",
+        definition: "Defining beliefs and principles that guide an individual's or business's actions.",
+        example: "Patagonia's core values include environmental sustainability, which shapes everything from materials to marketing.",
+        eli5: "Core values are the important rules you live by — like 'always be honest' or 'treat people fairly.'"
+      },
+      {
+        term: "Core Competencies",
+        definition: "An individual's or business's capabilities, skills, and expertise that contribute to their ability to outperform rivals.",
+        example: "Google's core competency is its search algorithm and data processing infrastructure.",
+        eli5: "Core competencies are the things you're really, really good at — your special talents that nobody else can easily copy."
+      },
+      {
+        term: "Vision Statement",
+        definition: "A concise description of a business's core values and aspirations.",
+        example: "Microsoft's vision: 'To help people and businesses throughout the world realize their full potential.'",
+        eli5: "A vision statement is a business's big dream written in one sentence — what they hope the world will look like."
+      },
+      {
+        term: "Mission Statement",
+        definition: "A description of what a business does and how it will achieve its long-term goals.",
+        example: "Tesla's mission: 'To accelerate the world's transition to sustainable energy.'",
+        eli5: "A mission statement tells everyone exactly what the company does every day to make their dream come true."
+      },
+      {
+        term: "Social Enterprise",
+        definition: "A business that seeks to generate profit while also achieving social objectives through its products, operations, or financial model.",
+        example: "TOMS Shoes donates a pair of shoes for every pair purchased — profit plus social impact.",
+        eli5: "It's a business that makes money AND tries to make the world a better place at the same time."
+      },
+      {
+        term: "Nonprofit Organization",
+        definition: "An organization that serves the public good rather than generating profit for owners. Surplus funds must be reinvested by law.",
+        example: "The Red Cross is a nonprofit — any extra money goes back into disaster relief, not to owners.",
+        eli5: "A nonprofit is a group that helps people instead of trying to make money for a boss or owner."
+      },
+      {
+        term: "Ethical Dilemma",
+        definition: "A situation where a core value conflicts with other core values or with business goals or practices.",
+        example: "A company discovers its cheapest supplier uses child labor — profit vs. ethics.",
+        eli5: "It's when you have to choose between two things and both choices have good and bad parts."
+      },
+      {
+        term: "Internal Stakeholders",
+        definition: "Individuals or groups in a business who have direct involvement in its operations, decisions, and outcomes — such as owners, managers, and employees.",
+        example: "Employees worried about layoffs during a merger are internal stakeholders affected by the decision.",
+        eli5: "Internal stakeholders are the people who actually work inside the company — the team."
+      },
+      {
+        term: "External Stakeholders",
+        definition: "Individuals or groups not directly employed by an organization but who have a vested interest in its decisions and outcomes — such as customers, government agencies, and community members.",
+        example: "Neighbors living near a new factory are external stakeholders concerned about noise and pollution.",
+        eli5: "External stakeholders are people outside the company who still care about what it does."
+      },
+      {
+        term: "Sole Proprietorship",
+        definition: "A business owned and operated by one person who is personally liable for all debts and obligations.",
+        example: "A freelance graphic designer running their own studio is a sole proprietorship.",
+        eli5: "It's when one person owns the whole business by themselves — all the wins and all the problems are theirs."
+      },
+      {
+        term: "Partnership",
+        definition: "A business owned by two or more people who share responsibility, profits, and personal liability for debts.",
+        example: "Ben & Jerry started as a partnership before becoming a corporation.",
+        eli5: "It's like teaming up with a friend to run a business together — you share everything."
+      },
+      {
+        term: "Limited Liability Company (LLC)",
+        definition: "A business structure that protects owners from personal liability for business debts while allowing them to retain control over decision making.",
+        example: "Many small restaurants organize as LLCs so the owner's personal house and savings are protected if the business fails.",
+        eli5: "An LLC is like a magic shield — if the business owes money, they can't take your personal stuff."
+      },
+      {
+        term: "Corporation",
+        definition: "A business structure where owners cede control to shareholders and an elected board of directors; typically has greater access to funding and growth potential.",
+        example: "Apple Inc. is a corporation — millions of shareholders own pieces of it through stock.",
+        eli5: "A corporation is a big company owned by lots of people who each own a tiny piece called a share."
+      },
+      {
+        term: "Outsourcing",
+        definition: "When businesses hire other businesses to perform specific functions, typically to increase efficiency or reduce costs.",
+        example: "Nike outsources manufacturing to factories in Vietnam and Indonesia.",
+        eli5: "Outsourcing is when you pay someone else to do a job for you because they can do it cheaper or better."
+      },
+      {
+        term: "Supply Chain",
+        definition: "The network of individuals and businesses involved at each stage of production and distribution — from raw materials to final customer delivery.",
+        example: "A chocolate bar's supply chain runs from cocoa farms in Ghana to factories in Europe to store shelves in the U.S.",
+        eli5: "A supply chain is the long journey a product takes from being made to landing in your hands."
+      },
+      {
+        term: "Artisan Process",
+        definition: "A production method requiring skilled labor and attention to detail, typically producing smaller quantities of higher-quality goods.",
+        example: "A hand-crafted leather bag made by a skilled artisan in a small workshop.",
+        eli5: "Artisan means someone carefully makes things by hand — like a baker who decorates every cake personally."
+      },
+      {
+        term: "Mass Production",
+        definition: "A production process using technology, assembly lines, and machinery to produce a larger quantity of goods.",
+        example: "Ford's assembly line revolutionized car manufacturing by mass-producing vehicles affordably.",
+        eli5: "Mass production is using big machines to make tons of the same thing really fast — like a cookie factory."
+      }
+    ]
+  },
+  {
+    id: 2,
+    title: "Marketing",
+    examWeight: "20–30%",
+    classPeriods: "~34",
+    color: "#F5822A",
+    summary: "Market research, consumer behavior, pricing, and promotion.",
+    vocab: [
+      {
+        term: "Marketing",
+        definition: "All activities businesses undertake to identify customers' problems, needs, and wants as well as to promote, sell, and deliver products.",
+        example: "Coca-Cola's marketing includes everything from Super Bowl ads to vending machine placement to social media campaigns.",
+        eli5: "Marketing is everything a company does to get people to notice, want, and buy their stuff."
+      },
+      {
+        term: "Demographic Characteristics",
+        definition: "Measurable qualities used to describe a population, such as age, sex, race, ethnicity, income, and location.",
+        example: "A luxury car brand targets demographics like adults aged 35–55 with household incomes over $150K.",
+        eli5: "Demographics are the basic facts about people — like how old they are, where they live, and how much money they make."
+      },
+      {
+        term: "Psychographic Characteristics",
+        definition: "Cognitive and behavioral factors within a population including individuals' interests, activities, values, and lifestyles.",
+        example: "Patagonia targets psychographics like outdoor enthusiasts who value environmental sustainability.",
+        eli5: "Psychographics are about what people like, believe in, and how they spend their time — their personality stuff."
+      },
+      {
+        term: "Market Segmentation",
+        definition: "Aggregating potential customers into groups (market segments) based on shared demographic and psychographic characteristics.",
+        example: "Netflix segments its market by viewing preferences — action fans, rom-com lovers, documentary watchers — to recommend content.",
+        eli5: "Market segmentation is sorting people into groups based on what they have in common — like sorting candy by flavor."
+      },
+      {
+        term: "Target Customers",
+        definition: "Buyers most likely to purchase a specific product because of their wants, needs, and preferences.",
+        example: "Lululemon's target customers are fitness-conscious women aged 25–40 who value premium athletic wear.",
+        eli5: "Target customers are the specific people a company thinks will love their product the most."
+      },
+      {
+        term: "Customer Profile",
+        definition: "A fictional description of a specific sample customer incorporating demographic and psychographic data as well as wants, needs, and preferences.",
+        example: "'Marketing Mary, age 32, lives in Austin, earns $75K, loves yoga, shops online, values eco-friendly brands.'",
+        eli5: "A customer profile is like creating a pretend person who represents your ideal buyer — like a character in a story."
+      },
+      {
+        term: "Customer Acquisition Cost",
+        definition: "The total marketing, advertising, and sales costs associated with acquiring customers divided by the total number of customers gained.",
+        example: "If a company spends $10,000 on ads and gains 200 new customers, its acquisition cost is $50 per customer.",
+        eli5: "It's how much money a company spends to get each new person to become a customer."
+      },
+      {
+        term: "Lifetime Value of a Customer",
+        definition: "The estimated amount of money a customer will spend on a business's products over time.",
+        example: "A Starbucks customer who spends $5/day for 20 years has a lifetime value of about $36,500.",
+        eli5: "It's the total amount of money one customer will spend at your business over their whole life."
+      },
+      {
+        term: "Brand Loyalty",
+        definition: "A customer's consistent preference for and repeat purchasing from a specific brand over competitors.",
+        example: "Many iPhone users refuse to switch to Android — that's strong brand loyalty.",
+        eli5: "Brand loyalty is when you love a brand so much you keep buying from them and won't switch."
+      },
+      {
+        term: "Cialdini's Principles of Influence",
+        definition: "Psychological factors identified by Robert Cialdini that cause people to comply with a request. Includes: scarcity, authority, consensus, liking, reciprocity, consistency, and unity.",
+        example: "'Only 3 left in stock!' (scarcity) or 'As recommended by doctors' (authority) are tactics based on these principles.",
+        eli5: "These are sneaky psychology tricks that make people more likely to say 'yes' — like when something feels rare so you want it more."
+      },
+      {
+        term: "Scarcity Principle",
+        definition: "The rarer an item seems, the more people tend to want it. Marketers use 'limited-time offer' or 'only one left' to create urgency.",
+        example: "Supreme drops limited quantities of clothing, creating massive demand through artificial scarcity.",
+        eli5: "When something seems rare or almost gone, your brain screams 'GET IT NOW!' — companies know this trick."
+      },
+      {
+        term: "Purchasing Pattern",
+        definition: "A consumer's typical routine for making purchases, including timing, frequency, and quantity.",
+        example: "Grocery shopping every Sunday, buying coffee every morning, restocking vitamins monthly — these are purchasing patterns.",
+        eli5: "Your purchasing pattern is your shopping habit — like always buying popcorn at the movies."
+      },
+      {
+        term: "Market Research",
+        definition: "The process of collecting detailed information about markets, products, and customer behavior to guide marketing decisions.",
+        example: "Before launching a new flavor, Lay's surveyed thousands of consumers about their taste preferences.",
+        eli5: "Market research is like being a detective — investigating what people want before you make it."
+      },
+      {
+        term: "Quantitative Data",
+        definition: "Numerical data that can be measured and analyzed, answering questions like how many, how much, and how often.",
+        example: "A survey showing that 73% of teens prefer streaming over cable TV is quantitative data.",
+        eli5: "Quantitative data is the numbers stuff — counting things, measuring things, doing math with the answers."
+      },
+      {
+        term: "Qualitative Data",
+        definition: "Descriptive, non-numerical data collected in words and images, answering questions like why and how.",
+        example: "Interview responses like 'I switched brands because the customer service was terrible' is qualitative data.",
+        eli5: "Qualitative data is the story stuff — people's opinions, feelings, and explanations in their own words."
+      },
+      {
+        term: "Desirability",
+        definition: "When a product creates value for customers by achieving problem-solution fit.",
+        example: "AirPods were desirable because they solved the annoyance of tangled wired earbuds.",
+        eli5: "Desirability means people actually want your product because it solves a real problem for them."
+      },
+      {
+        term: "Feasibility",
+        definition: "When a business has the capacity to produce and provide a product within available resources, technology, expertise, and time.",
+        example: "A startup might have a great flying car idea, but it's not feasible if the battery technology doesn't exist yet.",
+        eli5: "Feasibility means asking 'Can we actually make this?' — do we have the stuff and skills to build it?"
+      },
+      {
+        term: "Viability",
+        definition: "When a product has the potential to be profitable in a market.",
+        example: "A gold-plated toothbrush might be desirable and feasible, but at $500 it may not be viable — not enough people would buy it.",
+        eli5: "Viability means 'Can we make money doing this?' — will enough people pay enough for us to survive?"
+      },
+      {
+        term: "Business Hypothesis",
+        definition: "A stated assumption related to a customer, product, or market that businesses test before committing to a course of action.",
+        example: "'We believe college students aged 18–22 will pay $10/month for a meal-planning app' is a testable business hypothesis.",
+        eli5: "A business hypothesis is an educated guess about your customers that you test to see if you're right."
+      },
+      {
+        term: "A/B Testing",
+        definition: "A type of experiment measuring authentic customer responses to two viable alternatives to test a hypothesis in a real-world environment.",
+        example: "An e-commerce site shows half its visitors a blue 'Buy Now' button and half a green one to see which gets more clicks.",
+        eli5: "A/B testing is showing two different versions to people and seeing which one they like better."
+      },
+      {
+        term: "Product Development",
+        definition: "The process of creating or improving a product through research and iteration, typically including six stages: ideation, validation, design, messaging, production, and launch.",
+        example: "The iPhone went through years of product development — from concept sketches to prototypes to the 2007 launch.",
+        eli5: "Product development is the whole journey of turning an idea in your head into a real thing people can buy."
+      },
+      {
+        term: "Value Proposition",
+        definition: "A statement explaining who a product intends to serve, what problem it addresses, and how it is superior to alternatives.",
+        example: "Slack's value proposition: 'Where work happens — replacing email with faster, organized team communication.'",
+        eli5: "A value proposition is your elevator pitch — why should someone choose YOUR product over everything else?"
+      },
+      {
+        term: "Product-Market Fit",
+        definition: "When customer demand for a product is sufficient to generate profit.",
+        example: "Instagram found product-market fit when millions of users adopted its photo-sharing app within months of launch.",
+        eli5: "Product-market fit is when people love your product so much that it basically sells itself."
+      },
+      {
+        term: "Branding",
+        definition: "The process of developing an identity (brand) for a business or product to distinguish it from competitors, raise awareness, and generate loyalty.",
+        example: "Nike's swoosh, 'Just Do It' slogan, and athlete endorsements are all part of its branding.",
+        eli5: "Branding is giving your business a personality — a look, a feel, and a vibe that people recognize instantly."
+      },
+      {
+        term: "Product Life Cycle",
+        definition: "A series of stages a product passes through — introduction, growth, maturity, and decline — dictated by changes in customer demand over time.",
+        example: "The iPod went through all four stages: introduced in 2001, grew massively, matured, then declined as the iPhone took over.",
+        eli5: "The product life cycle is like growing up — being born (launch), being popular (growth), getting older (maturity), and eventually fading away (decline)."
+      },
+      {
+        term: "Pricing Strategy",
+        definition: "A method for determining how much to charge for a product; critical to viability because of price's role in attracting customers and generating profit.",
+        example: "Dollar Shave Club used penetration pricing — super low prices — to steal market share from Gillette.",
+        eli5: "A pricing strategy is your plan for deciding how much to charge — too high and nobody buys, too low and you lose money."
+      },
+      {
+        term: "Value-Based Pricing",
+        definition: "Setting a price based on the perceived value or worth of the product to the customer rather than production costs.",
+        example: "Designer handbags use value-based pricing — a Birkin bag costs far more than its materials because of perceived luxury.",
+        eli5: "It's charging based on how much people THINK something is worth, not how much it costs to make."
+      },
+      {
+        term: "Competitive Pricing",
+        definition: "Setting a product's price based on the prices of rival products (price matching), sometimes charging a premium for differentiated products.",
+        example: "Pepsi closely watches Coca-Cola's pricing and adjusts accordingly — that's competitive pricing.",
+        eli5: "Competitive pricing is peeking at what everyone else charges and setting your price nearby."
+      },
+      {
+        term: "Penetration Pricing",
+        definition: "Setting a low price (possibly below cost) initially to attract customers away from competitors and grow market share quickly, with plans to raise the price later.",
+        example: "Streaming services offering $1/month for the first 3 months use penetration pricing to hook subscribers.",
+        eli5: "Penetration pricing is charging really cheap at first to get tons of customers, then raising the price once they're hooked."
+      },
+      {
+        term: "Price Elasticity of Demand",
+        definition: "A measure of how responsive customers are to price changes; elastic demand means customers are very responsive, inelastic means less responsive.",
+        example: "Gasoline has inelastic demand — people still buy it even when prices spike. Movie tickets are more elastic — people skip movies when prices rise.",
+        eli5: "It's about whether people stop buying when prices go up. If they keep buying, demand is 'inelastic' — like a stiff rubber band."
+      },
+      {
+        term: "Marketing Channels",
+        definition: "The distribution channels consisting of all individuals and businesses required to deliver a finished product to the final customer. Also called distribution channels.",
+        example: "Apple uses both direct channels (Apple.com, Apple Stores) and indirect channels (Best Buy, carrier stores).",
+        eli5: "Marketing channels are all the different paths a product can take to get from the company to you."
+      },
+      {
+        term: "B2C (Business-to-Consumer)",
+        definition: "Marketing channels where businesses sell products directly to individual consumers, such as websites and retail stores.",
+        example: "Amazon selling books directly to you on their website is B2C.",
+        eli5: "B2C is when a company sells straight to regular people like you and me."
+      },
+      {
+        term: "B2B (Business-to-Business)",
+        definition: "Marketing channels where businesses sell products to other businesses, such as through industrial distributors.",
+        example: "Intel selling computer chips to Dell is a B2B transaction.",
+        eli5: "B2B is when one company sells stuff to another company, not to regular people."
+      },
+      {
+        term: "Promotional Mix",
+        definition: "The five tools businesses use to communicate with customers: media advertising, personal selling, sales promotion, direct marketing, and public relations.",
+        example: "A new restaurant might use social media ads (advertising), a grand opening sale (sales promotion), and a local news feature (PR).",
+        eli5: "The promotional mix is your toolbox of ways to tell people about your product — ads, deals, salespeople, and more."
+      },
+      {
+        term: "Digital Marketing",
+        definition: "The use of internet and digital technology tools — websites, email, social media, mobile apps — to connect with and serve customers.",
+        example: "A targeted Instagram ad that appears based on your recent Google searches is digital marketing in action.",
+        eli5: "Digital marketing is using the internet, apps, and social media to sell stuff and talk to customers."
+      },
+      {
+        term: "Big Data",
+        definition: "The large volume of information businesses collect about how customers respond to marketing and what factors make them more likely to buy.",
+        example: "Netflix analyzes billions of data points about viewing habits to decide which shows to produce next.",
+        eli5: "Big data is a massive mountain of information about what people do online — companies use it to figure out what you want."
+      },
+      {
+        term: "Price Gouging",
+        definition: "The illegal practice (in many states/countries) of raising the price of a product due to increased demand caused by a crisis.",
+        example: "Selling bottled water at $20 per bottle during a hurricane is price gouging — and illegal in most states.",
+        eli5: "Price gouging is when stores charge crazy high prices during emergencies — like $50 for a flashlight during a storm. It's against the law."
+      },
+      {
+        term: "Price Discrimination",
+        definition: "Charging different prices to different customer segments for the same product; illegal when based on race, nationality, sex, or other protected status.",
+        example: "Student discounts and senior discounts are legal forms of price discrimination. Charging more based on race is illegal.",
+        eli5: "Price discrimination is charging different people different amounts for the same thing — sometimes it's okay (student discounts) and sometimes it's against the law."
+      }
+    ]
+  },
+  {
+    id: 3,
+    title: "Finance & Accounting",
+    examWeight: "25–35%",
+    classPeriods: "~35",
+    color: "#00B140",
+    summary: "Saving, borrowing, financial statements, and business funding.",
+    vocab: [
+      {
+        term: "Interest",
+        definition: "Payments earned on savings or charged on borrowed money, determined by the interest rate, amount, type of vehicle, and economic conditions.",
+        example: "A savings account paying 4.5% APY earns you $45 on every $1,000 saved per year.",
+        eli5: "Interest is like a thank-you bonus the bank gives you for letting them hold your money — or a fee you pay for borrowing theirs."
+      },
+      {
+        term: "Inflation",
+        definition: "An increase in the prices of goods and services that erodes the purchasing power of savings because money buys fewer goods in the future.",
+        example: "If inflation is 5%, a $100 grocery trip last year now costs $105 for the same items.",
+        eli5: "Inflation is when prices keep going up, so your money buys less stuff over time — like your dollar getting weaker."
+      },
+      {
+        term: "Savings Account",
+        definition: "A deposit account at a financial institution that pays interest and is federally insured up to $250,000.",
+        example: "Most banks offer savings accounts where your money grows slowly but is safe and accessible.",
+        eli5: "A savings account is a piggy bank at the bank — your money is safe and it slowly grows a little more over time."
+      },
+      {
+        term: "Money Market Account",
+        definition: "Similar to a savings account and federally insured, but may require a larger minimum deposit, charge higher fees, pay higher interest, and provide easier cash access.",
+        example: "A money market account might pay 4% interest vs. 0.5% in a basic savings account, but requires a $2,500 minimum.",
+        eli5: "A money market account is like a fancy savings account — you get more interest, but you need more money to start one."
+      },
+      {
+        term: "Certificate of Deposit (CD)",
+        definition: "A federally insured deposit that pays a higher interest rate than savings accounts but restricts withdrawals for a set period (one month to five years).",
+        example: "You lock $5,000 in a 12-month CD at 5% — you can't touch it for a year, but you earn more interest.",
+        eli5: "A CD is like lending the bank your money for a while — they pay you extra, but you can't take it back until time's up."
+      },
+      {
+        term: "Collateral",
+        definition: "An asset pledged by a borrower to secure a loan; if the borrower defaults, the lender can seize the collateral.",
+        example: "When you get a car loan, the car itself is the collateral — if you stop paying, the bank takes the car.",
+        eli5: "Collateral is something valuable you promise to give the lender if you can't pay back what you borrowed."
+      },
+      {
+        term: "Secured Loan",
+        definition: "A loan backed by collateral (such as a car or house), typically carrying a lower interest rate than unsecured loans.",
+        example: "A mortgage is a secured loan — your house serves as collateral.",
+        eli5: "A secured loan is when you borrow money and promise something valuable as backup — so the lender feels safe."
+      },
+      {
+        term: "Unsecured Loan",
+        definition: "A general consumer loan not backed by collateral, typically carrying a higher interest rate because it poses more risk to the lender.",
+        example: "Credit cards are unsecured — there's no specific item the bank can repossess if you don't pay.",
+        eli5: "An unsecured loan is borrowing money with just your promise to pay it back — no backup plan for the lender."
+      },
+      {
+        term: "Credit Score",
+        definition: "A numerical rating on a credit report reflecting a consumer's past use of credit, shared with lenders, employers, landlords, and insurers.",
+        example: "A FICO score above 740 is considered excellent and helps you get the lowest interest rates on loans.",
+        eli5: "Your credit score is like a grade for how well you handle money and pay back what you borrow."
+      },
+      {
+        term: "Default",
+        definition: "When a borrower fails to repay a loan as agreed.",
+        example: "If you stop making your student loan payments for 270 days, your loan goes into default.",
+        eli5: "Defaulting is when you break your promise to pay back money you borrowed — it's really bad for your credit."
+      },
+      {
+        term: "Bankruptcy",
+        definition: "A legal process that eliminates some debts and helps the borrower set up a repayment plan for others. For businesses, it can mean liquidating assets or reorganizing under legal supervision.",
+        example: "When Toys 'R' Us couldn't pay its debts, it filed for bankruptcy and eventually closed all stores.",
+        eli5: "Bankruptcy is like pressing a reset button on your debts — a judge helps figure out what you can and can't pay."
+      },
+      {
+        term: "Assets",
+        definition: "Items of value owned by a business or individual, including cash, investments, property, and inventory.",
+        example: "Apple's assets include $60+ billion in cash, office buildings, patents, and inventory of iPhones.",
+        eli5: "Assets are all the valuable stuff you own — your money, your stuff, your house, everything worth something."
+      },
+      {
+        term: "Liabilities",
+        definition: "Debts or financial obligations owed by a business or individual.",
+        example: "A student loan, a car payment, and credit card debt are all personal liabilities.",
+        eli5: "Liabilities are all the money you owe to other people — bills, loans, and debts."
+      },
+      {
+        term: "Owners' Equity",
+        definition: "The value of a business to its owners, calculated as assets minus liabilities. Also called net worth for a business.",
+        example: "If a business has $500K in assets and $200K in liabilities, its owners' equity is $300K.",
+        eli5: "Owners' equity is what's left over after you subtract everything you owe from everything you own — the real value."
+      },
+      {
+        term: "GAAP",
+        definition: "Generally Accepted Accounting Principles — rules requiring public corporations to consistently disclose all financial information each reporting period.",
+        example: "Every quarter, Apple publishes financial statements following GAAP so investors can trust the numbers.",
+        eli5: "GAAP is like the rulebook for business math — everyone has to follow the same rules so the numbers are honest."
+      },
+      {
+        term: "Startup Costs",
+        definition: "One-time expenditures associated with launching a new business or product, plus initial expenses while establishing the business.",
+        example: "Opening a restaurant requires startup costs like kitchen equipment, renovation, permits, and initial food inventory.",
+        eli5: "Startup costs are all the money you need to spend just to get your business open before you make any money."
+      },
+      {
+        term: "Direct Costs",
+        definition: "Costs tied directly to the production or delivery of specific goods or services (also called Cost of Goods Sold or COGS for goods).",
+        example: "For a bakery, flour, sugar, eggs, and the baker's wages are direct costs.",
+        eli5: "Direct costs are the money you spend specifically to make your product — the ingredients and the labor."
+      },
+      {
+        term: "Operating Expenses",
+        definition: "Indirect, recurring costs associated with running a business, such as rent, office salaries, marketing, utilities, and insurance. Typically fixed.",
+        example: "A tech company's operating expenses include office rent, executive salaries, and marketing campaigns.",
+        eli5: "Operating expenses are the bills you have to pay every month just to keep your business running — like rent and electricity."
+      },
+      {
+        term: "Fixed Expenses",
+        definition: "Costs that do not change with production or service levels.",
+        example: "Monthly rent of $3,000 stays the same whether you make 10 products or 10,000.",
+        eli5: "Fixed expenses are bills that stay the same amount no matter what — like your phone plan that costs $50 every month."
+      },
+      {
+        term: "Variable Expenses",
+        definition: "Costs that increase as production or service levels increase.",
+        example: "A t-shirt company's fabric costs go up when they produce more shirts.",
+        eli5: "Variable expenses change based on how much stuff you make — more products means more money spent on materials."
+      },
+      {
+        term: "Bootstrapping",
+        definition: "Using personal savings, bank loans, or credit to fund startup costs rather than seeking outside investors.",
+        example: "Sara Blakely bootstrapped Spanx with $5,000 of her personal savings — no outside investors needed.",
+        eli5: "Bootstrapping is starting a business with your own money instead of asking other people for cash."
+      },
+      {
+        term: "Break Even",
+        definition: "The point at which a business's revenue covers all its costs for a period, resulting in zero profit and zero loss.",
+        example: "If monthly costs are $10,000 and each sale earns $50, you break even at 200 sales.",
+        eli5: "Breaking even is when you make exactly enough money to cover everything you spent — no profit, no loss."
+      },
+      {
+        term: "Equity Financing",
+        definition: "Business funding obtained by issuing ownership shares, ceding some control and future profits to investors who become part-owners.",
+        example: "When a startup sells 20% of the company to a venture capital firm for $1M, that's equity financing.",
+        eli5: "Equity financing is when you sell a piece of your company to get money — the investor now owns part of your business."
+      },
+      {
+        term: "Bond",
+        definition: "A financial instrument representing a loan from an investor to a business (or government). The bond pays interest to the holder.",
+        example: "Apple issues bonds to raise billions — investors lend money and receive regular interest payments.",
+        eli5: "A bond is basically an IOU — you lend a company money, and they pay you back with interest over time."
+      },
+      {
+        term: "Stock",
+        definition: "An ownership share in a corporation that can be sold privately or publicly. Stockholders may receive dividends.",
+        example: "Owning one share of Tesla stock means you own a tiny fraction of the whole company.",
+        eli5: "Stock is like a tiny piece of a company you can buy — if the company does well, your piece gets more valuable."
+      },
+      {
+        term: "Dividends",
+        definition: "A share of a business's profits distributed to stockholders. Some corporations reinvest earnings instead of paying dividends.",
+        example: "Coca-Cola has paid dividends every year for over 60 years — shareholders receive quarterly cash payments.",
+        eli5: "Dividends are like allowance from a company — they share some of their profits with the people who own their stock."
+      },
+      {
+        term: "Capital Gain",
+        definition: "The profit earned when an investor sells a financial asset (stock, bond, property) for more than they paid for it.",
+        example: "You bought stock at $50 and sold at $80 — your capital gain is $30 per share.",
+        eli5: "A capital gain is when you sell something for more than you paid — that extra money is your profit."
+      },
+      {
+        term: "Rate of Return",
+        definition: "The annual return on an investment, calculated by dividing total dollars gained (income + capital gains) by the price of the asset.",
+        example: "You invested $1,000, earned $50 in dividends and $100 in gains — your rate of return is 15%.",
+        eli5: "Rate of return is how much money your investment made you, shown as a percentage — the higher, the better."
+      },
+      {
+        term: "Risk Tolerance",
+        definition: "An individual's or institution's willingness to take financial risks. Higher risk tolerance means willingness to fund riskier ventures for potentially higher returns.",
+        example: "A 25-year-old might invest aggressively in stocks (high risk tolerance), while a retiree prefers safe bonds (low risk tolerance).",
+        eli5: "Risk tolerance is how brave you are with your money — some people are okay with risky bets, others play it safe."
+      },
+      {
+        term: "Income Statement",
+        definition: "A financial statement (also called profit & loss statement) comparing total revenue to total costs over a period to determine net profit or loss.",
+        example: "Netflix's income statement shows $33B in revenue minus costs, resulting in ~$5B in net profit.",
+        eli5: "An income statement is like a report card for a business's money — it shows how much came in, what went out, and what's left."
+      },
+      {
+        term: "Revenue",
+        definition: "Income generated by a business's core activities, such as sales of goods and services.",
+        example: "McDonald's revenue is all the money it collects from selling burgers, fries, and drinks worldwide.",
+        eli5: "Revenue is all the money a business earns from selling their stuff — before they pay any bills."
+      },
+      {
+        term: "Gross Profit",
+        definition: "Revenue minus the cost of goods sold (COGS). Shows profit after deducting only direct production costs.",
+        example: "If a company earns $1M in revenue and COGS is $600K, gross profit is $400K.",
+        eli5: "Gross profit is how much money is left after paying for the stuff you used to make your products."
+      },
+      {
+        term: "Net Profit",
+        definition: "The final bottom-line profit after subtracting all costs — COGS, operating expenses, interest, and taxes — from revenue.",
+        example: "After all expenses, if a company keeps $200K from $1M in revenue, net profit is $200K (20% margin).",
+        eli5: "Net profit is the actual money left over after a business pays every single bill — the real earnings."
+      },
+      {
+        term: "Gross Profit Margin",
+        definition: "Gross profit divided by total revenue; measures how effectively a business manages its direct production costs.",
+        example: "A gross profit margin of 60% means the business keeps 60 cents of every dollar after production costs.",
+        eli5: "Gross profit margin tells you what percentage of sales money is left after making the product."
+      },
+      {
+        term: "Balance Sheet",
+        definition: "A financial statement comparing a business's assets to its liabilities and owners' equity at a specific point in time. Assets = Liabilities + Owners' Equity.",
+        example: "A balance sheet shows that a company owns $5M in assets, owes $3M in liabilities, and has $2M in equity.",
+        eli5: "A balance sheet is a snapshot of what a business owns, what it owes, and what's really theirs — all at one moment."
+      },
+      {
+        term: "Liquidity",
+        definition: "The ease with which an asset can be converted into cash. Cash is the most liquid asset.",
+        example: "Cash is highly liquid; a factory building is illiquid because selling it takes months.",
+        eli5: "Liquidity is how quickly you can turn something into cash — money in your wallet is super liquid, your house is not."
+      },
+      {
+        term: "Cash Flow Statement",
+        definition: "A financial statement showing how cash inflows and outflows impact a business's cash balance over a reporting period.",
+        example: "A company might be profitable on paper but have negative cash flow if customers haven't paid their invoices yet.",
+        eli5: "A cash flow statement tracks money actually moving in and out of the business — like checking your bank account activity."
+      },
+      {
+        term: "Net Worth (Personal)",
+        definition: "A household's total assets (savings, investments, property, possessions) minus all liabilities.",
+        example: "You have $50K in savings, a $200K house, and $120K in debt — your net worth is $130K.",
+        eli5: "Net worth is what you'd have left if you sold everything you own and paid off all your debts."
+      },
+      {
+        term: "Embezzlement",
+        definition: "The illegal act of stealing or misusing funds entrusted to you by a business or organization.",
+        example: "A CFO who secretly transfers company funds to a personal account is committing embezzlement.",
+        eli5: "Embezzlement is when someone who's trusted with a company's money secretly steals it for themselves."
+      }
+    ]
+  },
+  {
+    id: 4,
+    title: "Management & Strategy",
+    examWeight: "15–20%",
+    classPeriods: "~30",
+    color: "#6B3FA0",
+    summary: "Leadership, KPIs, decision-making frameworks, and strategic analysis.",
+    vocab: [
+      {
+        term: "Management",
+        definition: "The process of planning, organizing, leading, and evaluating a business's employment of human, financial, and physical resources to meet goals and objectives.",
+        example: "A store manager plans schedules, organizes inventory, leads the team, and evaluates weekly sales performance.",
+        eli5: "Management is being in charge of making sure everything runs smoothly — the people, the money, and the stuff."
+      },
+      {
+        term: "Leadership Skills",
+        definition: "The abilities to articulate vision and mission, build productive teams, negotiate conflicts, and motivate people.",
+        example: "Satya Nadella revitalized Microsoft by shifting its culture from competition to collaboration — that's leadership.",
+        eli5: "Leadership skills are what make people want to follow you — being inspiring, fair, and good at getting teams to work together."
+      },
+      {
+        term: "Compensation",
+        definition: "The pay and benefits employees receive, including hourly wages, salary, commission, piece rate pay, or profit sharing.",
+        example: "A real estate agent earns commission (% of each sale), while a teacher earns an annual salary.",
+        eli5: "Compensation is everything a job pays you — your salary, bonuses, and perks like health insurance."
+      },
+      {
+        term: "Key Performance Indicator (KPI)",
+        definition: "A data point used to measure a business's performance, including progress toward goals and effectiveness of strategy.",
+        example: "A restaurant might track KPIs like average table turnover time, customer satisfaction score, and monthly revenue.",
+        eli5: "KPIs are the scoreboard numbers a business watches to see if they're winning or losing."
+      },
+      {
+        term: "Benchmark",
+        definition: "A reference point used to compare data to a standard, based on internal historical data or external industry standards.",
+        example: "If the industry average profit margin is 15%, that's the benchmark a company uses to judge its own 12% margin.",
+        eli5: "A benchmark is the bar you compare yourself to — like checking if your test score is above or below the class average."
+      },
+      {
+        term: "Strategy",
+        definition: "A plan or approach to achieving a goal, describing how a business will achieve competitive advantage, increase revenue, reduce costs, or increase profits.",
+        example: "Walmart's strategy is cost leadership — offering the lowest prices by running an ultra-efficient supply chain.",
+        eli5: "Strategy is your game plan — the big-picture idea of how you're going to win."
+      },
+      {
+        term: "Tactics",
+        definition: "Specific actions or approaches intended to advance a strategy.",
+        example: "If the strategy is 'grow market share,' a tactic might be 'launch a 30% off promotion in Q1.'",
+        eli5: "Tactics are the small steps you take to carry out your big plan — the actual moves you make."
+      },
+      {
+        term: "PACED Model",
+        definition: "A deliberative decision-making framework: Problem, Alternatives, Criteria, Evaluation, Decision.",
+        example: "A manager uses PACED to decide between three vendors: defines the problem, lists options, sets criteria (cost, quality, speed), evaluates each, then decides.",
+        eli5: "PACED is a step-by-step recipe for making smart decisions — figure out the problem, look at your options, and pick the best one."
+      },
+      {
+        term: "Return on Investment (ROI)",
+        definition: "A measure of additional profit generated by an investment divided by the cost of that investment.",
+        example: "You spend $10K on a marketing campaign that generates $25K in new sales and $15K in profit — ROI is 150%.",
+        eli5: "ROI tells you how much extra money you made compared to what you spent — the bigger the number, the better the deal."
+      },
+      {
+        term: "Porter's Five Forces",
+        definition: "A framework by Michael Porter to evaluate competitive intensity, attractiveness, and potential profitability of a market. The five forces: competitive rivalry, threat of new entrants, threat of substitutes, customer power, and supplier power.",
+        example: "Before entering the streaming market, a company would analyze: How many competitors? (rivalry) Can new ones easily enter? (new entrants) Can customers switch to cable or YouTube? (substitutes)",
+        eli5: "Porter's Five Forces is like checking the weather before a game — you look at five things that tell you how tough the competition will be."
+      },
+      {
+        term: "Competitive Rivalry",
+        definition: "The competitive intensity among existing businesses in a market, determined by number of rivals, product differentiation, and pricing power. Typically the strongest force.",
+        example: "The smartphone market has intense competitive rivalry — Apple, Samsung, Google, and many others all competing fiercely.",
+        eli5: "Competitive rivalry is how hard the businesses already in the market are fighting each other."
+      },
+      {
+        term: "Threat of New Entrants",
+        definition: "How easy or difficult it is for new businesses to enter and compete in a market, determined by barriers to entry.",
+        example: "The airline industry has a low threat of new entrants because starting an airline requires billions in capital.",
+        eli5: "Threat of new entrants is asking 'how easy is it for someone new to start competing with us?'"
+      },
+      {
+        term: "Threat of Substitutes",
+        definition: "The availability of alternative products that can meet the same customer needs but are not direct competitors.",
+        example: "For movie theaters, streaming services like Netflix are a substitute — different product, same need (entertainment).",
+        eli5: "Substitutes are different products that do the same job — like taking the bus instead of an Uber."
+      },
+      {
+        term: "Customer Power",
+        definition: "Buyers' ability to drive prices lower, shaped by number of customers, acquisition costs, and switching costs.",
+        example: "Walmart has enormous customer power over suppliers — if a supplier won't lower prices, Walmart can switch to a competitor.",
+        eli5: "Customer power is how much control buyers have — if they can easily leave you for a competitor, they have a lot of power."
+      },
+      {
+        term: "Supplier Power",
+        definition: "The ability of resource providers to raise input costs, determined by the competitiveness of the resource market.",
+        example: "TSMC has high supplier power in semiconductors — most tech companies depend on them for chips.",
+        eli5: "Supplier power is how much control the people who sell you materials have over the prices they charge you."
+      },
+      {
+        term: "Switching Costs",
+        definition: "The monetary and psychological costs a customer incurs when changing the product or brand they buy.",
+        example: "Moving from iPhone to Android has high switching costs — you'd lose iMessage, AirDrop, and your app purchases.",
+        eli5: "Switching costs are all the hassle and expense of changing from one product to another — the reason people stay loyal even when something else is cheaper."
+      },
+      {
+        term: "SWOT Analysis",
+        definition: "A framework evaluating internal and external factors affecting a business: Strengths, Weaknesses, Opportunities, and Threats.",
+        example: "A coffee shop's SWOT: Strength = loyal customers, Weakness = small menu, Opportunity = nearby office park, Threat = Starbucks opening next door.",
+        eli5: "SWOT is like looking in the mirror AND out the window — what are you good at, what needs work, what chances are out there, and what could hurt you?"
+      },
+      {
+        term: "Strengths (SWOT)",
+        definition: "Internal advantages such as core competencies, brand recognition, intellectual property, skilled employees, and supply chain efficiency.",
+        example: "Nike's strengths include a globally recognized brand, athlete endorsements, and a massive distribution network.",
+        eli5: "Strengths are the awesome things about your business that you control — the stuff that makes you special."
+      },
+      {
+        term: "Weaknesses (SWOT)",
+        definition: "Internal disadvantages such as missing competencies, low brand recognition, product flaws, limited funds, or outdated technology.",
+        example: "A startup's weakness might be limited funding and no brand recognition yet.",
+        eli5: "Weaknesses are the not-so-great things about your business that you need to fix."
+      },
+      {
+        term: "Opportunities (SWOT)",
+        definition: "External factors beyond a business's control that may contribute to success, such as market growth, reduced competition, or favorable regulation changes.",
+        example: "The shift to remote work created opportunities for Zoom — a massive new market appeared practically overnight.",
+        eli5: "Opportunities are lucky breaks from the outside world that your business could take advantage of."
+      },
+      {
+        term: "Threats (SWOT)",
+        definition: "External factors beyond a business's control that may negatively impact the business, such as rising costs, natural disasters, or disruptive innovation.",
+        example: "For taxi companies, the rise of Uber and Lyft was an external threat that disrupted the entire industry.",
+        eli5: "Threats are scary things from the outside world that could hurt your business — stuff you can't control."
+      }
+    ]
+  },
+  {
+    id: 5,
+    title: "Personal Goals, Budgeting, & Investing",
+    examWeight: "—",
+    classPeriods: "~24",
+    color: "#E03C31",
+    summary: "Taxes, insurance, long-term saving, investing, and financial planning.",
+    vocab: [
+      {
+        term: "Income Tax",
+        definition: "A percentage of income that individuals pay to federal, state, and/or local governments. Employers withhold a portion of each paycheck for income taxes.",
+        example: "If you earn $50,000 and your effective tax rate is 22%, you owe about $11,000 in federal income tax.",
+        eli5: "Income tax is the part of your paycheck the government takes to pay for things like roads, schools, and the military."
+      },
+      {
+        term: "Capital Gains Tax",
+        definition: "Tax paid when an individual sells an asset for more than they paid for it, typically at a lower rate than income tax.",
+        example: "You bought stock for $1,000 and sold it for $1,500 — you owe capital gains tax on the $500 profit.",
+        eli5: "Capital gains tax is the tax you pay on profit from selling something valuable, like stocks or a house."
+      },
+      {
+        term: "Payroll Taxes",
+        definition: "Taxes withheld from paychecks that fund specific government programs like Social Security, Medicare, Medicaid, and unemployment benefits. Employers pay half; self-employed pay the full amount.",
+        example: "About 7.65% of each paycheck goes to Social Security and Medicare — your employer matches that amount.",
+        eli5: "Payroll taxes are taken from your paycheck to fund programs that help people who are retired, sick, or out of work."
+      },
+      {
+        term: "Progressive Tax",
+        definition: "A tax system where individuals earning higher incomes pay higher tax rates.",
+        example: "In the U.S., the first $11,000 of income might be taxed at 10%, while income above $578,000 is taxed at 37%.",
+        eli5: "A progressive tax means the more money you make, the bigger percentage you pay — so rich people pay a higher rate."
+      },
+      {
+        term: "Tax Deduction",
+        definition: "An amount subtracted from taxable income, reducing the taxes owed. May include mortgage interest, retirement contributions, and charitable donations.",
+        example: "Donating $5,000 to charity can be a tax deduction — it reduces your taxable income by $5,000.",
+        eli5: "A tax deduction is like a discount on your taxes — certain expenses you have reduce how much income the government taxes."
+      },
+      {
+        term: "Tax Credit",
+        definition: "A dollar-for-dollar reduction in the amount of taxes owed, more valuable than a deduction. May include child tax credits and education credits.",
+        example: "A $2,000 child tax credit directly reduces your tax bill by $2,000 — much more powerful than a $2,000 deduction.",
+        eli5: "A tax credit is even better than a deduction — it's money taken straight off your tax bill, dollar for dollar."
+      },
+      {
+        term: "Gross Income",
+        definition: "The total amount of income earned during a pay period before any deductions.",
+        example: "Your annual salary is $60,000, so your gross income per month is $5,000 before taxes and deductions.",
+        eli5: "Gross income is all the money you earned before the government and your benefits take their cut."
+      },
+      {
+        term: "Net Income (Personal)",
+        definition: "The amount of money an individual receives after all mandatory and voluntary deductions are removed from gross income. Also called net pay or take-home pay.",
+        example: "Your gross pay is $5,000/month but after taxes, health insurance, and retirement, your net pay is $3,700.",
+        eli5: "Net income is the money that actually shows up in your bank account — what's left after everything is taken out."
+      },
+      {
+        term: "Pretax Deductions",
+        definition: "Paycheck deductions made before income taxes are calculated, reducing taxable income. Includes retirement savings and health insurance premiums.",
+        example: "Contributing $500/month to a 401(k) as a pretax deduction means you don't pay income tax on that $500.",
+        eli5: "Pretax deductions are money taken from your paycheck BEFORE taxes — so you end up paying less in taxes."
+      },
+      {
+        term: "Insurable Risk",
+        definition: "A risk involving potential loss due to chance that is quantifiable and statistically predictable, allowing an insurer to estimate cost and likelihood.",
+        example: "Car accidents are insurable risks — insurers can calculate the probability and average cost of accidents.",
+        eli5: "An insurable risk is something bad that MIGHT happen and that insurance companies can put a price tag on."
+      },
+      {
+        term: "Premium",
+        definition: "The regular payment (annual, semi-annual, or monthly) an insurance buyer makes for their insurance policy.",
+        example: "Your car insurance premium is $150/month — that's what you pay to keep your coverage active.",
+        eli5: "A premium is the fee you pay for insurance — like a subscription to protection."
+      },
+      {
+        term: "Deductible (Insurance)",
+        definition: "The amount an insured person must pay out-of-pocket before insurance coverage kicks in.",
+        example: "With a $1,000 deductible, if your car repair costs $3,000, you pay $1,000 and insurance covers $2,000.",
+        eli5: "A deductible is the amount you have to pay yourself before insurance starts helping — the higher it is, the lower your monthly premium."
+      },
+      {
+        term: "Health Insurance",
+        definition: "Insurance that reimburses policy owners for medically necessary health care and sometimes preventive care. Often provided as an employee benefit.",
+        example: "Your employer-sponsored health insurance covers 80% of medical bills after you meet a $500 deductible.",
+        eli5: "Health insurance helps pay your doctor and hospital bills so a broken arm doesn't cost you thousands of dollars."
+      },
+      {
+        term: "Life Insurance",
+        definition: "Insurance providing funds to designated beneficiaries upon the insured person's death, intended to replace lost income and fund dependents' needs.",
+        example: "A parent with young children might carry a $500,000 life insurance policy so the family is financially secure.",
+        eli5: "Life insurance is money that gets paid to your family if something happens to you — so they're taken care of."
+      },
+      {
+        term: "Diversification",
+        definition: "An investment strategy of allocating funds across a variety of financial assets with different risk levels and expected returns to seek higher returns without excessive risk.",
+        example: "Instead of putting all your money in one tech stock, you spread it across stocks, bonds, and real estate.",
+        eli5: "Diversification is not putting all your eggs in one basket — if one investment goes bad, the others can save you."
+      },
+      {
+        term: "Mutual Fund",
+        definition: "An investment vehicle that pools money from many investors to invest in a diversified portfolio of stocks and/or bonds.",
+        example: "A S&P 500 index fund is a mutual fund that invests your money across 500 of the largest U.S. companies.",
+        eli5: "A mutual fund is like a group project for investing — everyone chips in money and a professional invests it in lots of different things."
+      },
+      {
+        term: "Compounding",
+        definition: "The process where investment returns generate their own returns over time, allowing wealth to grow exponentially. Starting early magnifies the effect.",
+        example: "$10,000 invested at 8% for 30 years becomes ~$100,000 — but if you wait 10 years to start, it only becomes ~$47,000.",
+        eli5: "Compounding is when your money makes money, and then THAT money makes money too — like a snowball getting bigger as it rolls downhill."
+      },
+      {
+        term: "Time Horizon",
+        definition: "The length of time an individual plans to hold an investment before needing the funds. Longer horizons allow more risk-taking.",
+        example: "A 25-year-old saving for retirement has a 40-year time horizon, allowing aggressive stock investments.",
+        eli5: "Time horizon is how long you can wait before you need your money — the longer you wait, the more risk you can take."
+      },
+      {
+        term: "Loss Aversion",
+        definition: "A behavioral bias where investors feel the pain of losses more strongly than the pleasure of equivalent gains, potentially causing premature selling.",
+        example: "Selling a stock that dropped 10% in panic, only to watch it recover 20% the next month — that's loss aversion at work.",
+        eli5: "Loss aversion is when losing $100 feels way worse than winning $100 feels good — so you make scared decisions with your money."
+      },
+      {
+        term: "Mortgage",
+        definition: "A loan used to purchase a home, with the property serving as collateral. Monthly payments depend on loan size, repayment period, and interest rate (fixed or adjustable).",
+        example: "A 30-year fixed mortgage at 6.5% on a $300,000 home means monthly payments of about $1,900.",
+        eli5: "A mortgage is a huge loan you get to buy a house — you pay it back a little bit every month for a long time."
+      },
+      {
+        term: "Budget (Personal)",
+        definition: "A plan describing expected net pay for a period and all planned savings and expenses including debt payments. Helps consumers manage income and track financial goals.",
+        example: "A monthly budget: $4,000 net pay → $1,200 rent, $400 groceries, $300 car, $500 savings, $200 entertainment, etc.",
+        eli5: "A budget is a plan for your money — you decide ahead of time where every dollar goes so you don't run out."
+      }
+    ]
+  }
+];
+
+// ─── SHUFFLE UTILITY ─────────────────────────────────────────────────────────
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ─── CONFETTI ────────────────────────────────────────────────────────────────
+function Confetti({ show }) {
+  if (!show) return null;
+  return (
+    <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 9999 }}>
+      {Array.from({ length: 40 }).map((_, i) => {
+        const left = Math.random() * 100;
+        const delay = Math.random() * 0.5;
+        const dur = 1.5 + Math.random();
+        const size = 6 + Math.random() * 8;
+        const colors = ["#009CDC", "#F5822A", "#00B140", "#FFD400", "#E03C31", "#6B3FA0"];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        return (
+          <div key={i} style={{
+            position: "absolute", top: -20, left: `${left}%`, width: size, height: size,
+            backgroundColor: color, borderRadius: Math.random() > 0.5 ? "50%" : "2px",
+            animation: `confettiFall ${dur}s ease-out ${delay}s forwards`,
+            transform: `rotate(${Math.random() * 360}deg)`,
+            opacity: 0.9
+          }} />
+        );
+      })}
+      <style>{`
+        @keyframes confettiFall {
+          0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+          100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// ─── FLASHCARD MODULE ────────────────────────────────────────────────────────
+function Flashcards({ vocab, unitColor }) {
+  const [idx, setIdx] = useState(0);
+  const [flipped, setFlipped] = useState(false);
+  const [cards, setCards] = useState(() => shuffle(vocab));
+  const [known, setKnown] = useState(0);
+
+  const reset = () => { setCards(shuffle(vocab)); setIdx(0); setFlipped(false); setKnown(0); };
+  const card = cards[idx];
+  const progress = ((idx) / cards.length) * 100;
+
+  return (
+    <div style={{ maxWidth: 560, margin: "0 auto" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 8 }}>
+        <span style={{ fontFamily: "Poppins, sans-serif", fontSize: 14, color: "#666", fontWeight: 500 }}>
+          Card {idx + 1} of {cards.length} · {known} known
+        </span>
+        <button onClick={reset} style={{ ...pillBtn, background: "transparent", color: unitColor, border: `1.5px solid ${unitColor}`, fontSize: 12, padding: "4px 14px" }}>
+          Shuffle & Restart
+        </button>
+      </div>
+
+      <div style={{ height: 4, background: "#e8e8e8", borderRadius: 2, marginBottom: 24, overflow: "hidden" }}>
+        <div style={{ height: "100%", width: `${progress}%`, background: unitColor, borderRadius: 2, transition: "width 0.4s ease" }} />
+      </div>
+
+      {idx < cards.length ? (
+        <>
+          <div onClick={() => setFlipped(!flipped)} style={{
+            perspective: 1000, cursor: "pointer", height: 280, marginBottom: 20
+          }}>
+            <div style={{
+              position: "relative", width: "100%", height: "100%",
+              transition: "transform 0.5s", transformStyle: "preserve-3d",
+              transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)"
+            }}>
+              {/* FRONT */}
+              <div style={{
+                ...cardFace, backfaceVisibility: "hidden",
+                background: `linear-gradient(135deg, ${unitColor}11, ${unitColor}06)`,
+                border: `2px solid ${unitColor}30`
+              }}>
+                <span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 2, color: unitColor, fontWeight: 700, fontFamily: "Poppins, sans-serif", marginBottom: 12 }}>Term</span>
+                <span style={{ fontSize: 26, fontWeight: 700, color: "#1a1a2e", fontFamily: "Poppins, sans-serif", textAlign: "center", lineHeight: 1.3 }}>{card.term}</span>
+                <span style={{ fontSize: 12, color: "#999", fontFamily: "Poppins, sans-serif", marginTop: 16 }}>tap to flip</span>
+              </div>
+              {/* BACK */}
+              <div style={{
+                ...cardFace, backfaceVisibility: "hidden",
+                transform: "rotateY(180deg)", background: "#fff",
+                border: `2px solid ${unitColor}30`
+              }}>
+                <span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 2, color: unitColor, fontWeight: 700, fontFamily: "Poppins, sans-serif", marginBottom: 8 }}>Definition</span>
+                <span style={{ fontSize: 15, color: "#333", fontFamily: "Poppins, sans-serif", textAlign: "center", lineHeight: 1.6, padding: "0 8px" }}>{card.definition}</span>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+            <button onClick={() => { setFlipped(false); setIdx(idx + 1); }} style={{ ...pillBtn, background: "#E03C31", color: "#fff", flex: 1, maxWidth: 180 }}>
+              ✗ Still Learning
+            </button>
+            <button onClick={() => { setFlipped(false); setKnown(known + 1); setIdx(idx + 1); }} style={{ ...pillBtn, background: "#00B140", color: "#fff", flex: 1, maxWidth: 180 }}>
+              ✓ Got It
+            </button>
+          </div>
+        </>
+      ) : (
+        <div style={{ textAlign: "center", padding: 40 }}>
+          <div style={{ fontSize: 48, marginBottom: 12 }}>🎉</div>
+          <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 22, fontWeight: 700, color: "#1a1a2e" }}>Deck Complete!</p>
+          <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 16, color: "#666", margin: "8px 0 24px" }}>
+            You knew <strong style={{ color: "#00B140" }}>{known}</strong> out of <strong>{cards.length}</strong> terms
+          </p>
+          <button onClick={reset} style={{ ...pillBtn, background: unitColor, color: "#fff", padding: "10px 32px" }}>Study Again</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── MATCHING MODULE ─────────────────────────────────────────────────────────
+function Matching({ vocab, unitColor }) {
+  const ROUND_SIZE = 6;
+  const [round, setRound] = useState(() => shuffle(vocab).slice(0, ROUND_SIZE));
+  const [selected, setSelected] = useState(null);
+  const [matched, setMatched] = useState([]);
+  const [wrong, setWrong] = useState(null);
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  const terms = round.map(v => ({ type: "term", text: v.term, id: v.term }));
+  const defs = shuffle(round.map(v => ({ type: "def", text: v.definition.length > 90 ? v.definition.slice(0, 87) + "…" : v.definition, id: v.term, full: v.definition })));
+
+  const handleClick = (item) => {
+    if (matched.includes(item.id) && selected?.id !== item.id) return;
+    if (matched.includes(item.id)) return;
+
+    if (!selected) {
+      setSelected(item);
+    } else if (selected.type === item.type) {
+      setSelected(item);
+    } else {
+      if (selected.id === item.id) {
+        setMatched(prev => {
+          const next = [...prev, item.id];
+          if (next.length === ROUND_SIZE) {
+            setShowConfetti(true);
+            setTimeout(() => setShowConfetti(false), 2000);
+          }
+          return next;
+        });
+        setSelected(null);
+      } else {
+        setWrong(item);
+        setTimeout(() => { setWrong(null); setSelected(null); }, 600);
+      }
+    }
+  };
+
+  const newRound = () => {
+    setRound(shuffle(vocab).slice(0, ROUND_SIZE));
+    setSelected(null); setMatched([]); setWrong(null);
+  };
+
+  const isActive = (item) => selected?.type === item.type && selected?.text === item.text;
+  const isMatched = (item) => matched.includes(item.id);
+  const isWrong = (item) => wrong?.text === item.text;
+
+  return (
+    <div style={{ maxWidth: 700, margin: "0 auto" }}>
+      <Confetti show={showConfetti} />
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 8 }}>
+        <span style={{ fontFamily: "Poppins, sans-serif", fontSize: 14, color: "#666", fontWeight: 500 }}>
+          Matched: {matched.length}/{ROUND_SIZE}
+        </span>
+        <button onClick={newRound} style={{ ...pillBtn, background: "transparent", color: unitColor, border: `1.5px solid ${unitColor}`, fontSize: 12, padding: "4px 14px" }}>
+          New Round
+        </button>
+      </div>
+
+      {matched.length === ROUND_SIZE ? (
+        <div style={{ textAlign: "center", padding: 40 }}>
+          <div style={{ fontSize: 48, marginBottom: 12 }}>🏆</div>
+          <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 22, fontWeight: 700, color: "#1a1a2e" }}>All Matched!</p>
+          <button onClick={newRound} style={{ ...pillBtn, background: unitColor, color: "#fff", padding: "10px 32px", marginTop: 16 }}>Play Again</button>
+        </div>
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 2, color: unitColor, fontWeight: 700, fontFamily: "Poppins, sans-serif", marginBottom: 4, textAlign: "center" }}>Terms</div>
+            {terms.map(t => (
+              <button key={t.text} onClick={() => handleClick(t)} disabled={isMatched(t)} style={{
+                ...matchCard,
+                borderColor: isMatched(t) ? "#00B140" : isActive(t) ? unitColor : isWrong(t) ? "#E03C31" : "#ddd",
+                background: isMatched(t) ? "#00B14010" : isActive(t) ? `${unitColor}12` : isWrong(t) ? "#E03C3112" : "#fff",
+                opacity: isMatched(t) ? 0.5 : 1,
+                color: "#1a1a2e", fontWeight: 600, fontSize: 14
+              }}>
+                {t.text}
+              </button>
+            ))}
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 2, color: unitColor, fontWeight: 700, fontFamily: "Poppins, sans-serif", marginBottom: 4, textAlign: "center" }}>Definitions</div>
+            {defs.map(d => (
+              <button key={d.text} onClick={() => handleClick(d)} disabled={isMatched(d)} style={{
+                ...matchCard,
+                borderColor: isMatched(d) ? "#00B140" : isActive(d) ? unitColor : isWrong(d) ? "#E03C31" : "#ddd",
+                background: isMatched(d) ? "#00B14010" : isActive(d) ? `${unitColor}12` : isWrong(d) ? "#E03C3112" : "#fff",
+                opacity: isMatched(d) ? 0.5 : 1,
+                fontSize: 12, lineHeight: 1.4
+              }}>
+                {d.text}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── MULTIPLE CHOICE MODULE ──────────────────────────────────────────────────
+function MultipleChoice({ vocab, unitColor }) {
+  const allVocab = vocab;
+  const [questions, setQuestions] = useState([]);
+  const [qIdx, setQIdx] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  const generate = useCallback(() => {
+    const shuffled = shuffle(allVocab);
+    const qs = shuffled.slice(0, Math.min(10, shuffled.length)).map(v => {
+      const wrong = shuffle(allVocab.filter(x => x.term !== v.term)).slice(0, 3);
+      const options = shuffle([
+        { text: v.definition, correct: true },
+        ...wrong.map(w => ({ text: w.definition, correct: false }))
+      ]);
+      return { term: v.term, options };
+    });
+    setQuestions(qs); setQIdx(0); setSelected(null); setScore(0);
+  }, [allVocab]);
+
+  useEffect(() => { generate(); }, [generate]);
+
+  const handleSelect = (opt, i) => {
+    if (selected !== null) return;
+    setSelected(i);
+    if (opt.correct) {
+      setScore(s => s + 1);
+      if (qIdx === questions.length - 1 && score + 1 === questions.length) {
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 2500);
+      }
+    }
+  };
+
+  const next = () => { setQIdx(qIdx + 1); setSelected(null); };
+  const q = questions[qIdx];
+  if (!q) return null;
+
+  return (
+    <div style={{ maxWidth: 600, margin: "0 auto" }}>
+      <Confetti show={showConfetti} />
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 8 }}>
+        <span style={{ fontFamily: "Poppins, sans-serif", fontSize: 14, color: "#666", fontWeight: 500 }}>
+          Question {qIdx + 1}/{questions.length} · Score: {score}
+        </span>
+        <button onClick={generate} style={{ ...pillBtn, background: "transparent", color: unitColor, border: `1.5px solid ${unitColor}`, fontSize: 12, padding: "4px 14px" }}>
+          New Quiz
+        </button>
+      </div>
+
+      <div style={{ height: 4, background: "#e8e8e8", borderRadius: 2, marginBottom: 24, overflow: "hidden" }}>
+        <div style={{ height: "100%", width: `${((qIdx) / questions.length) * 100}%`, background: unitColor, borderRadius: 2, transition: "width 0.4s" }} />
+      </div>
+
+      {qIdx < questions.length ? (
+        <>
+          <div style={{ background: `linear-gradient(135deg, ${unitColor}10, ${unitColor}05)`, border: `2px solid ${unitColor}25`, borderRadius: 16, padding: "24px 20px", marginBottom: 20, textAlign: "center" }}>
+            <span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 2, color: unitColor, fontWeight: 700, fontFamily: "Poppins, sans-serif" }}>What is the definition of...</span>
+            <p style={{ fontSize: 22, fontWeight: 700, color: "#1a1a2e", fontFamily: "Poppins, sans-serif", margin: "12px 0 0" }}>{q.term}</p>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+            {q.options.map((opt, i) => {
+              let bg = "#fff", border = "#ddd", txtColor = "#333";
+              if (selected !== null) {
+                if (opt.correct) { bg = "#00B14015"; border = "#00B140"; txtColor = "#00B140"; }
+                else if (i === selected && !opt.correct) { bg = "#E03C3115"; border = "#E03C31"; txtColor = "#E03C31"; }
+              } else if (i === selected) { bg = `${unitColor}10`; border = unitColor; }
+              return (
+                <button key={i} onClick={() => handleSelect(opt, i)} style={{
+                  ...matchCard, borderColor: border, background: bg, color: txtColor,
+                  textAlign: "left", fontSize: 14, lineHeight: 1.5, padding: "14px 16px",
+                  cursor: selected !== null ? "default" : "pointer"
+                }}>
+                  <span style={{ fontWeight: 700, marginRight: 10, color: border !== "#ddd" ? border : unitColor }}>
+                    {String.fromCharCode(65 + i)}.
+                  </span>
+                  {opt.text}
+                </button>
+              );
+            })}
+          </div>
+
+          {selected !== null && qIdx < questions.length - 1 && (
+            <div style={{ textAlign: "center" }}>
+              <button onClick={next} style={{ ...pillBtn, background: unitColor, color: "#fff", padding: "10px 36px" }}>Next →</button>
+            </div>
+          )}
+
+          {selected !== null && qIdx === questions.length - 1 && (
+            <div style={{ textAlign: "center", padding: 24 }}>
+              <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 20, fontWeight: 700, color: "#1a1a2e" }}>
+                Final Score: {score + (q.options[selected]?.correct ? 0 : 0)}/{questions.length}
+              </p>
+              <button onClick={generate} style={{ ...pillBtn, background: unitColor, color: "#fff", padding: "10px 32px", marginTop: 12 }}>Try Again</button>
+            </div>
+          )}
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+// ─── ELI5 MODULE ─────────────────────────────────────────────────────────────
+function ELI5({ vocab, unitColor }) {
+  const [search, setSearch] = useState("");
+  const filtered = vocab.filter(v => v.term.toLowerCase().includes(search.toLowerCase()));
+
+  return (
+    <div style={{ maxWidth: 600, margin: "0 auto" }}>
+      <div style={{ position: "relative", marginBottom: 24 }}>
+        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search terms..."
+          style={{ width: "100%", padding: "12px 16px 12px 42px", borderRadius: 12, border: "2px solid #e0e0e0", fontFamily: "Poppins, sans-serif", fontSize: 14, outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" }}
+          onFocus={e => e.target.style.borderColor = unitColor} onBlur={e => e.target.style.borderColor = "#e0e0e0"}
+        />
+        <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 18, color: "#999" }}>🔍</span>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        {filtered.map(v => (
+          <div key={v.term} style={{ background: "#fff", borderRadius: 16, border: "1.5px solid #eee", padding: 20, transition: "box-shadow 0.2s" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+              <span style={{ fontSize: 24 }}>🧒</span>
+              <span style={{ fontFamily: "Poppins, sans-serif", fontSize: 18, fontWeight: 700, color: "#1a1a2e" }}>{v.term}</span>
+            </div>
+            <div style={{ background: `${unitColor}08`, borderRadius: 12, padding: "14px 16px", borderLeft: `4px solid ${unitColor}`, marginBottom: 12 }}>
+              <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 15, color: "#333", lineHeight: 1.6, margin: 0 }}>
+                <strong style={{ color: unitColor }}>ELI5:</strong> {v.eli5}
+              </p>
+            </div>
+            <div style={{ background: "#f8f9fa", borderRadius: 12, padding: "14px 16px" }}>
+              <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 13, color: "#666", lineHeight: 1.5, margin: 0 }}>
+                <strong style={{ color: "#444" }}>Formal:</strong> {v.definition}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── EXAMPLES MODULE ─────────────────────────────────────────────────────────
+function Examples({ vocab, unitColor }) {
+  return (
+    <div style={{ maxWidth: 600, margin: "0 auto", display: "flex", flexDirection: "column", gap: 14 }}>
+      {vocab.map(v => (
+        <div key={v.term} style={{ background: "#fff", borderRadius: 14, border: "1.5px solid #eee", overflow: "hidden" }}>
+          <div style={{ background: `linear-gradient(135deg, ${unitColor}15, ${unitColor}05)`, padding: "14px 18px", borderBottom: `1.5px solid ${unitColor}20` }}>
+            <span style={{ fontFamily: "Poppins, sans-serif", fontSize: 16, fontWeight: 700, color: "#1a1a2e" }}>{v.term}</span>
+          </div>
+          <div style={{ padding: "16px 18px" }}>
+            <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 10 }}>
+              <span style={{ fontSize: 18, flexShrink: 0, marginTop: 1 }}>📖</span>
+              <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 13, color: "#555", lineHeight: 1.55, margin: 0 }}>{v.definition}</p>
+            </div>
+            <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: "#FFF9E6", borderRadius: 10, padding: "10px 12px" }}>
+              <span style={{ fontSize: 18, flexShrink: 0, marginTop: 1 }}>💡</span>
+              <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 13, color: "#7A6200", lineHeight: 1.55, margin: 0 }}>{v.example}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── CUMULATIVE REVIEW MODULE ────────────────────────────────────────────────
+function CumulativeReview({ units, activeUnitIds }) {
+  const allVocab = units.filter(u => activeUnitIds.includes(u.id)).flatMap(u => u.vocab.map(v => ({ ...v, unitId: u.id, unitTitle: u.title, unitColor: u.color })));
+  const [search, setSearch] = useState("");
+  const filtered = allVocab.filter(v => v.term.toLowerCase().includes(search.toLowerCase()) || v.definition.toLowerCase().includes(search.toLowerCase()));
+
+  return (
+    <div style={{ maxWidth: 700, margin: "0 auto" }}>
+      <div style={{ textAlign: "center", marginBottom: 24 }}>
+        <span style={{ fontFamily: "Poppins, sans-serif", fontSize: 38, fontWeight: 800, color: "#1a1a2e" }}>{allVocab.length}</span>
+        <span style={{ fontFamily: "Poppins, sans-serif", fontSize: 14, color: "#888", display: "block" }}>Total Terms Across All Units</span>
+      </div>
+
+      <div style={{ position: "relative", marginBottom: 24 }}>
+        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search all vocabulary..."
+          style={{ width: "100%", padding: "12px 16px 12px 42px", borderRadius: 12, border: "2px solid #e0e0e0", fontFamily: "Poppins, sans-serif", fontSize: 14, outline: "none", boxSizing: "border-box" }}
+        />
+        <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 18, color: "#999" }}>🔍</span>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {filtered.map(v => (
+          <div key={v.unitId + v.term} style={{ background: "#fff", borderRadius: 12, border: "1.5px solid #eee", padding: "14px 16px", display: "flex", gap: 14, alignItems: "flex-start" }}>
+            <div style={{ width: 5, minHeight: 40, borderRadius: 3, background: v.unitColor, flexShrink: 0, marginTop: 2 }} />
+            <div style={{ flex: 1 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6, flexWrap: "wrap", gap: 6 }}>
+                <span style={{ fontFamily: "Poppins, sans-serif", fontSize: 15, fontWeight: 700, color: "#1a1a2e" }}>{v.term}</span>
+                <span style={{ fontFamily: "Poppins, sans-serif", fontSize: 10, fontWeight: 600, color: v.unitColor, background: `${v.unitColor}15`, padding: "2px 8px", borderRadius: 6 }}>Unit {v.unitId}</span>
+              </div>
+              <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 13, color: "#666", lineHeight: 1.5, margin: 0 }}>{v.definition}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── SHARED STYLES ───────────────────────────────────────────────────────────
+const pillBtn = {
+  fontFamily: "Poppins, sans-serif", fontWeight: 600, fontSize: 14,
+  padding: "8px 20px", borderRadius: 10, border: "none", cursor: "pointer",
+  transition: "all 0.2s"
+};
+
+const cardFace = {
+  position: "absolute", width: "100%", height: "100%",
+  borderRadius: 20, display: "flex", flexDirection: "column",
+  alignItems: "center", justifyContent: "center", padding: 28,
+  boxSizing: "border-box"
+};
+
+const matchCard = {
+  fontFamily: "Poppins, sans-serif", padding: "12px 14px",
+  borderRadius: 12, border: "2px solid #ddd", background: "#fff",
+  cursor: "pointer", transition: "all 0.2s", textAlign: "center",
+  lineHeight: 1.4, display: "block", width: "100%"
+};
+
+// ─── MODULE BOTTOM NAV ───────────────────────────────────────────────────────
+function ModuleBottomNav({ currentModuleId, unitColor, onNavigate }) {
+  const currentIdx = MODULES.findIndex(m => m.id === currentModuleId);
+  const nextModule = currentIdx < MODULES.length - 1 ? MODULES[currentIdx + 1] : null;
+  const prevModule = currentIdx > 0 ? MODULES[currentIdx - 1] : null;
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
+  return (
+    <div style={{
+      marginTop: 40, paddingTop: 24, borderTop: "1.5px solid #eee",
+      display: "flex", flexDirection: "column", gap: 10, alignItems: "center"
+    }}>
+      <button onClick={scrollToTop} style={{
+        display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+        background: "#f5f6fa", border: "1.5px solid #e0e0e0", borderRadius: 12,
+        padding: "10px 24px", cursor: "pointer", fontFamily: "Poppins, sans-serif",
+        fontSize: 13, fontWeight: 600, color: "#666", width: "100%", maxWidth: 340,
+        transition: "all 0.2s"
+      }}>
+        <span style={{ fontSize: 16 }}>↑</span> Back to Top
+      </button>
+
+      <div style={{ display: "flex", gap: 10, width: "100%", maxWidth: 340 }}>
+        {prevModule && (
+          <button onClick={() => { onNavigate(prevModule.id); scrollToTop(); }} style={{
+            flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+            background: "#fff", border: `1.5px solid ${unitColor}30`, borderRadius: 12,
+            padding: "10px 14px", cursor: "pointer", fontFamily: "Poppins, sans-serif",
+            fontSize: 12, fontWeight: 600, color: unitColor, transition: "all 0.2s"
+          }}>
+            <span>←</span> {prevModule.icon} {prevModule.label}
+          </button>
+        )}
+        {nextModule && (
+          <button onClick={() => { onNavigate(nextModule.id); scrollToTop(); }} style={{
+            flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+            background: unitColor, border: "none", borderRadius: 12,
+            padding: "10px 14px", cursor: "pointer", fontFamily: "Poppins, sans-serif",
+            fontSize: 12, fontWeight: 600, color: "#fff", transition: "all 0.2s"
+          }}>
+            {nextModule.icon} {nextModule.label} <span>→</span>
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── NAV ITEMS ───────────────────────────────────────────────────────────────
+const MODULES = [
+  { id: "examples", label: "Examples", icon: "💡", comp: Examples, desc: "Real-world examples for every term", step: "Learn" },
+  { id: "eli5", label: "ELI5", icon: "🧒", comp: ELI5, desc: "Simple explanations anyone can understand", step: "Understand" },
+  { id: "flashcards", label: "Flashcards", icon: "🃏", comp: Flashcards, desc: "Flip through every term at your pace", step: "Memorize" },
+  { id: "matching", label: "Matching", icon: "🔗", comp: Matching, desc: "Pair terms to definitions in timed rounds", step: "Practice" },
+  { id: "quiz", label: "Quiz", icon: "✅", comp: MultipleChoice, desc: "10-question multiple choice challenge", step: "Test" },
+];
+
+// ─── MAIN APP ────────────────────────────────────────────────────────────────
+function App() {
+  const [selectedUnit, setSelectedUnit] = useState(null);
+  const [selectedModule, setSelectedModule] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check(); window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile) setSidebarOpen(false);
+  }, [isMobile]);
+
+  const unit = UNITS.find(u => u.id === selectedUnit);
+  const unitColor = unit?.color || "#009CDC";
+
+  return (
+    <div style={{ fontFamily: "Poppins, sans-serif", display: "flex", minHeight: "100vh", background: "#F5F6FA", position: "relative" }}>
+
+      {/* OVERLAY for mobile */}
+      {isMobile && sidebarOpen && (
+        <div onClick={() => setSidebarOpen(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 98 }} />
+      )}
+
+      {/* ─── SIDEBAR ──────────────────────────────────────────────────────── */}
+      <aside style={{
+        width: isMobile ? 280 : sidebarOpen ? 270 : 0,
+        minHeight: "100vh", background: "#1a1a2e", color: "#fff",
+        display: "flex", flexDirection: "column", flexShrink: 0,
+        transition: "all 0.3s ease", overflow: "hidden",
+        position: isMobile ? "fixed" : "sticky", top: 0, left: 0,
+        zIndex: 99, boxShadow: isMobile && sidebarOpen ? "4px 0 24px rgba(0,0,0,0.3)" : "none",
+        transform: isMobile && !sidebarOpen ? "translateX(-100%)" : "translateX(0)"
+      }}>
+        <div style={{ padding: "24px 20px 16px", borderBottom: "1px solid #ffffff15" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg, #009CDC, #F5822A)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 14 }}>AP</div>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.2 }}>AP Business</div>
+              <div style={{ fontSize: 11, color: "#ffffff80", fontWeight: 500 }}>with Personal Finance</div>
+            </div>
+          </div>
+          <div style={{ fontSize: 11, color: "#ffffff50", marginTop: 8 }}>Mr. D's Class · Vocabulary Hub</div>
+        </div>
+
+        <div style={{ flex: 1, padding: "16px 12px", overflowY: "auto" }}>
+          {/* Units */}
+          <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: 2, color: "#ffffff40", fontWeight: 700, padding: "0 8px", marginBottom: 10 }}>Units</div>
+
+          {UNITS.map(u => (
+            <div key={u.id}>
+              <button onClick={() => { setSelectedUnit(u.id === selectedUnit && selectedModule === null ? null : u.id); setSelectedModule(null); if (isMobile) setSidebarOpen(false); }}
+                style={{
+                  display: "flex", alignItems: "center", gap: 10, width: "100%",
+                  padding: "10px 12px", borderRadius: 10, border: "none",
+                  background: selectedUnit === u.id ? `${u.color}25` : "transparent",
+                  color: selectedUnit === u.id ? u.color : "#ffffffbb",
+                  cursor: "pointer", fontFamily: "Poppins, sans-serif", fontSize: 13,
+                  fontWeight: selectedUnit === u.id ? 700 : 500, transition: "all 0.2s",
+                  textAlign: "left", marginBottom: 2
+                }}>
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: u.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: "#fff", flexShrink: 0 }}>{u.id}</div>
+                <span style={{ lineHeight: 1.3 }}>{u.title}</span>
+              </button>
+
+              {selectedUnit === u.id && (
+                <div style={{ paddingLeft: 20, marginBottom: 8, marginTop: 4 }}>
+                  {MODULES.map(m => (
+                    <button key={m.id} onClick={() => { setSelectedModule(m.id); if (isMobile) setSidebarOpen(false); }}
+                      style={{
+                        display: "flex", alignItems: "center", gap: 8, width: "100%",
+                        padding: "7px 10px", borderRadius: 8, border: "none",
+                        background: selectedModule === m.id ? `${u.color}20` : "transparent",
+                        color: selectedModule === m.id ? u.color : "#ffffff80",
+                        cursor: "pointer", fontFamily: "Poppins, sans-serif", fontSize: 12,
+                        fontWeight: selectedModule === m.id ? 600 : 400, transition: "all 0.15s",
+                        textAlign: "left", marginBottom: 1
+                      }}>
+                      <span>{m.icon}</span>
+                      <span>{m.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+
+          <div style={{ height: 1, background: "#ffffff12", margin: "16px 8px" }} />
+
+          {/* Cumulative */}
+          <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: 2, color: "#ffffff40", fontWeight: 700, padding: "0 8px", marginBottom: 10 }}>Cumulative</div>
+          <button onClick={() => { setSelectedUnit("cumulative"); setSelectedModule(null); if (isMobile) setSidebarOpen(false); }}
+            style={{
+              display: "flex", alignItems: "center", gap: 10, width: "100%",
+              padding: "10px 12px", borderRadius: 10, border: "none",
+              background: selectedUnit === "cumulative" ? "#ffffff15" : "transparent",
+              color: selectedUnit === "cumulative" ? "#FFD400" : "#ffffff80",
+              cursor: "pointer", fontFamily: "Poppins, sans-serif", fontSize: 13,
+              fontWeight: selectedUnit === "cumulative" ? 700 : 500, transition: "all 0.2s",
+              textAlign: "left"
+            }}>
+            <div style={{ width: 28, height: 28, borderRadius: 8, background: "linear-gradient(135deg, #009CDC, #F5822A)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>∑</div>
+            <span>All Vocabulary</span>
+          </button>
+        </div>
+
+        <div style={{ padding: "12px 16px", borderTop: "1px solid #ffffff10", fontSize: 10, color: "#ffffff30", textAlign: "center" }}>
+          AP® is a trademark of College Board
+        </div>
+      </aside>
+
+      {/* ─── MAIN CONTENT ────────────────────────────────────────────────── */}
+      <main style={{ flex: 1, minWidth: 0 }}>
+        {/* TOP BAR */}
+        <header style={{ background: "#fff", borderBottom: "1.5px solid #eee", padding: "12px 20px", display: "flex", alignItems: "center", gap: 12, position: "sticky", top: 0, zIndex: 50 }}>
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{
+            background: "none", border: "none", cursor: "pointer", fontSize: 22, padding: "4px 6px",
+            color: "#1a1a2e", display: "flex", alignItems: "center"
+          }}>☰</button>
+
+          {selectedUnit !== null && (
+            <button onClick={() => { setSelectedUnit(null); setSelectedModule(null); }} style={{
+              background: "none", border: "none", cursor: "pointer", fontSize: 18, padding: "4px 6px",
+              color: "#888", display: "flex", alignItems: "center", fontFamily: "Poppins, sans-serif"
+            }} title="Home">🏠</button>
+          )}
+
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "#1a1a2e", fontFamily: "Poppins, sans-serif" }}>
+              {selectedUnit === "cumulative" ? "Cumulative Review" : unit ? `Unit ${unit.id}: ${unit.title}` : "AP Business · Vocabulary Hub"}
+            </div>
+            {unit && selectedModule && (
+              <div style={{ fontSize: 11, color: "#888", fontWeight: 500, fontFamily: "Poppins, sans-serif" }}>
+                {MODULES.find(m => m.id === selectedModule)?.icon} {MODULES.find(m => m.id === selectedModule)?.label} · {unit.vocab.length} terms
+              </div>
+            )}
+          </div>
+        </header>
+
+        <div style={{ padding: isMobile ? "20px 14px" : "28px 32px", maxWidth: 960, margin: "0 auto" }}>
+          {/* HOME / LANDING */}
+          {selectedUnit === null && (
+            <div>
+              {/* HERO */}
+              <div style={{
+                background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
+                borderRadius: 24, padding: isMobile ? "32px 20px" : "48px 44px",
+                marginBottom: 32, position: "relative", overflow: "hidden"
+              }}>
+                {/* Decorative circles */}
+                <div style={{ position: "absolute", top: -40, right: -40, width: 180, height: 180, borderRadius: "50%", background: "#009CDC15", pointerEvents: "none" }} />
+                <div style={{ position: "absolute", bottom: -30, left: -30, width: 120, height: 120, borderRadius: "50%", background: "#F5822A10", pointerEvents: "none" }} />
+                <div style={{ position: "absolute", top: 20, right: 60, width: 50, height: 50, borderRadius: "50%", background: "#FFD40010", pointerEvents: "none" }} />
+
+                <div style={{ position: "relative", zIndex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 20 }}>
+                    <div style={{
+                      width: 56, height: 56, borderRadius: 16,
+                      background: "linear-gradient(135deg, #009CDC, #F5822A)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontWeight: 900, fontSize: 20, color: "#fff",
+                      boxShadow: "0 4px 20px rgba(0,156,220,0.3)"
+                    }}>AP</div>
+                    <div>
+                      <div style={{ fontFamily: "Poppins, sans-serif", fontSize: 11, fontWeight: 600, color: "#FFD400", textTransform: "uppercase", letterSpacing: 2 }}>
+                        College Board · Fall 2026
+                      </div>
+                    </div>
+                  </div>
+
+                  <h1 style={{
+                    fontFamily: "Poppins, sans-serif", fontSize: isMobile ? 30 : 42, fontWeight: 900,
+                    color: "#fff", margin: "0 0 8px", lineHeight: 1.15,
+                    letterSpacing: "-0.5px"
+                  }}>
+                    AP Business with<br />Personal Finance
+                  </h1>
+                  <h2 style={{
+                    fontFamily: "Poppins, sans-serif", fontSize: isMobile ? 18 : 24, fontWeight: 700,
+                    color: "#009CDC", margin: "0 0 16px"
+                  }}>
+                    Vocabulary Mastery Hub
+                  </h2>
+                  <p style={{
+                    fontFamily: "Poppins, sans-serif", fontSize: 15, color: "#ffffff90",
+                    margin: "0 0 24px", maxWidth: 520, lineHeight: 1.6
+                  }}>
+                    Every key term from the official Course & Exam Description, organized by unit with five study modes designed to take you from first exposure to exam-ready confidence.
+                  </p>
+
+                  <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+                    <div style={{
+                      display: "inline-flex", alignItems: "center", gap: 8,
+                      background: "#ffffff12", borderRadius: 10, padding: "8px 16px",
+                      border: "1px solid #ffffff15"
+                    }}>
+                      <span style={{ fontSize: 18 }}>👨‍🏫</span>
+                      <span style={{ fontFamily: "Poppins, sans-serif", fontSize: 13, fontWeight: 600, color: "#fff" }}>Mr. D's Class</span>
+                    </div>
+                    <div style={{
+                      display: "inline-flex", alignItems: "center", gap: 8,
+                      background: "#ffffff12", borderRadius: 10, padding: "8px 16px",
+                      border: "1px solid #ffffff15"
+                    }}>
+                      <span style={{ fontSize: 18 }}>📚</span>
+                      <span style={{ fontFamily: "Poppins, sans-serif", fontSize: 13, fontWeight: 600, color: "#fff" }}>
+                        {UNITS.reduce((a, u) => a + u.vocab.length, 0)} Total Terms
+                      </span>
+                    </div>
+                    <div style={{
+                      display: "inline-flex", alignItems: "center", gap: 8,
+                      background: "#ffffff12", borderRadius: 10, padding: "8px 16px",
+                      border: "1px solid #ffffff15"
+                    }}>
+                      <span style={{ fontSize: 18 }}>🎯</span>
+                      <span style={{ fontFamily: "Poppins, sans-serif", fontSize: 13, fontWeight: 600, color: "#fff" }}>{UNITS.length} Units</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* HOW IT WORKS — Learning Progression */}
+              <div style={{ marginBottom: 36 }}>
+                <h3 style={{ fontFamily: "Poppins, sans-serif", fontSize: 18, fontWeight: 800, color: "#1a1a2e", margin: "0 0 6px" }}>
+                  How It Works
+                </h3>
+                <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 13, color: "#888", margin: "0 0 16px" }}>
+                  Each unit follows a proven learning progression — understand first, then practice, then test.
+                </p>
+                <div style={{ display: "flex", gap: isMobile ? 8 : 12, flexWrap: "wrap" }}>
+                  {MODULES.map((m, i) => (
+                    <div key={m.id} style={{
+                      flex: isMobile ? "1 1 calc(50% - 8px)" : 1,
+                      background: "#fff", borderRadius: 14, padding: isMobile ? "14px 12px" : "16px",
+                      border: "1.5px solid #eee", textAlign: "center",
+                      position: "relative"
+                    }}>
+                      <div style={{
+                        position: "absolute", top: -10, left: "50%", transform: "translateX(-50%)",
+                        background: "#1a1a2e", color: "#fff", fontSize: 10, fontWeight: 700,
+                        padding: "2px 10px", borderRadius: 6, fontFamily: "Poppins, sans-serif",
+                        letterSpacing: 0.5
+                      }}>
+                        Step {i + 1}
+                      </div>
+                      <div style={{ fontSize: 28, marginBottom: 6, marginTop: 6 }}>{m.icon}</div>
+                      <div style={{ fontFamily: "Poppins, sans-serif", fontSize: 13, fontWeight: 700, color: "#1a1a2e", marginBottom: 2 }}>{m.label}</div>
+                      <div style={{ fontFamily: "Poppins, sans-serif", fontSize: 11, color: "#009CDC", fontWeight: 600 }}>{m.step}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* UNITS SECTION */}
+              <div style={{ marginBottom: 32 }}>
+                <h3 style={{ fontFamily: "Poppins, sans-serif", fontSize: 18, fontWeight: 800, color: "#1a1a2e", margin: "0 0 6px" }}>
+                  Course Units
+                </h3>
+                <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 13, color: "#888", margin: "0 0 16px" }}>
+                  Select a unit to begin studying. All sections are unlocked — study in any order.
+                </p>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                  {UNITS.map(u => (
+                    <button key={u.id} onClick={() => setSelectedUnit(u.id)} style={{
+                      background: "#fff", borderRadius: 20, border: "1.5px solid #eee",
+                      padding: isMobile ? 18 : 24, cursor: "pointer", textAlign: "left",
+                      transition: "all 0.2s", display: "flex", flexDirection: "column", gap: 14,
+                      width: "100%"
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 14, width: "100%" }}>
+                        <div style={{
+                          width: 52, height: 52, borderRadius: 14, background: u.color,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 20, fontWeight: 900, color: "#fff", flexShrink: 0,
+                          boxShadow: `0 4px 14px ${u.color}40`
+                        }}>{u.id}</div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontFamily: "Poppins, sans-serif", fontSize: 17, fontWeight: 700, color: "#1a1a2e" }}>{u.title}</div>
+                          <div style={{ fontFamily: "Poppins, sans-serif", fontSize: 12, color: "#888", marginTop: 2 }}>
+                            {u.vocab.length} terms
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Sample terms preview */}
+                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                        {u.vocab.slice(0, isMobile ? 4 : 7).map(v => (
+                          <span key={v.term} style={{
+                            fontSize: 11, fontWeight: 500, color: "#666",
+                            background: "#f5f6fa", padding: "3px 10px", borderRadius: 6,
+                            fontFamily: "Poppins, sans-serif", whiteSpace: "nowrap"
+                          }}>
+                            {v.term}
+                          </span>
+                        ))}
+                        <span style={{ fontSize: 11, fontWeight: 600, color: u.color, padding: "3px 6px", fontFamily: "Poppins, sans-serif" }}>
+                          +{Math.max(0, u.vocab.length - (isMobile ? 4 : 7))} more
+                        </span>
+                      </div>
+
+                      {/* Module tags */}
+                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", borderTop: "1px solid #f0f0f0", paddingTop: 12 }}>
+                        {MODULES.map(m => (
+                          <span key={m.id} style={{
+                            fontSize: 10, fontWeight: 600, color: u.color,
+                            background: `${u.color}10`, padding: "3px 10px", borderRadius: 6,
+                            fontFamily: "Poppins, sans-serif"
+                          }}>
+                            {m.icon} {m.label}
+                          </span>
+                        ))}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* CUMULATIVE REVIEW CARD */}
+              <button onClick={() => setSelectedUnit("cumulative")} style={{
+                width: "100%", background: "linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)",
+                borderRadius: 20, border: "none", padding: isMobile ? "24px 20px" : "28px 32px",
+                cursor: "pointer", textAlign: "left", color: "#fff", marginBottom: 32,
+                position: "relative", overflow: "hidden"
+              }}>
+                <div style={{ position: "absolute", top: -20, right: -20, width: 100, height: 100, borderRadius: "50%", background: "#FFD40010", pointerEvents: "none" }} />
+                <div style={{ display: "flex", alignItems: "center", gap: 16, position: "relative", zIndex: 1 }}>
+                  <div style={{
+                    width: 52, height: 52, borderRadius: 14,
+                    background: "linear-gradient(135deg, #009CDC, #F5822A)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 24, flexShrink: 0
+                  }}>∑</div>
+                  <div>
+                    <div style={{ fontFamily: "Poppins, sans-serif", fontSize: 18, fontWeight: 700 }}>Cumulative Vocabulary Review</div>
+                    <div style={{ fontFamily: "Poppins, sans-serif", fontSize: 13, color: "#ffffff70", marginTop: 4 }}>
+                      All {UNITS.reduce((a, u) => a + u.vocab.length, 0)} terms across {UNITS.length} units · Searchable & color-coded
+                    </div>
+                  </div>
+                </div>
+              </button>
+
+              {/* COURSE INFO FOOTER */}
+              <div style={{
+                background: "#fff", borderRadius: 16, border: "1.5px solid #eee",
+                padding: isMobile ? 18 : 24, marginBottom: 16
+              }}>
+                <h4 style={{ fontFamily: "Poppins, sans-serif", fontSize: 14, fontWeight: 700, color: "#1a1a2e", margin: "0 0 12px" }}>
+                  About This Course
+                </h4>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 14 }}>
+                  <div style={{ background: "#f8f9fb", borderRadius: 12, padding: "14px 16px" }}>
+                    <div style={{ fontFamily: "Poppins, sans-serif", fontSize: 11, color: "#888", fontWeight: 600, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Course</div>
+                    <div style={{ fontFamily: "Poppins, sans-serif", fontSize: 14, fontWeight: 700, color: "#1a1a2e" }}>AP Business with Personal Finance</div>
+                  </div>
+                  <div style={{ background: "#f8f9fb", borderRadius: 12, padding: "14px 16px" }}>
+                    <div style={{ fontFamily: "Poppins, sans-serif", fontSize: 11, color: "#888", fontWeight: 600, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Exam Date</div>
+                    <div style={{ fontFamily: "Poppins, sans-serif", fontSize: 14, fontWeight: 700, color: "#1a1a2e" }}>Spring 2027 (first administration)</div>
+                  </div>
+                  <div style={{ background: "#f8f9fb", borderRadius: 12, padding: "14px 16px" }}>
+                    <div style={{ fontFamily: "Poppins, sans-serif", fontSize: 11, color: "#888", fontWeight: 600, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Source</div>
+                    <div style={{ fontFamily: "Poppins, sans-serif", fontSize: 14, fontWeight: 700, color: "#1a1a2e" }}>Official College Board CED</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ textAlign: "center", padding: "12px 0", fontFamily: "Poppins, sans-serif", fontSize: 11, color: "#bbb" }}>
+                AP® and Advanced Placement® are trademarks of the College Board.
+                <br />Vocabulary extracted from the AP Business with Personal Finance Course and Exam Description, Effective Fall 2026.
+              </div>
+            </div>
+          )}
+
+          {/* UNIT SELECTED BUT NO MODULE */}
+          {selectedUnit !== null && selectedUnit !== "cumulative" && selectedModule === null && unit && (
+            <div>
+              <div style={{
+                background: `linear-gradient(135deg, ${unitColor}14, ${unitColor}06)`,
+                borderRadius: 20, padding: isMobile ? 20 : 32, marginBottom: 28,
+                border: `2px solid ${unitColor}20`, position: "relative", overflow: "hidden"
+              }}>
+                <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: `${unitColor}10`, pointerEvents: "none" }} />
+                <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 8, position: "relative", zIndex: 1 }}>
+                  <div style={{ width: 52, height: 52, borderRadius: 14, background: unitColor, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 900, color: "#fff", boxShadow: `0 4px 14px ${unitColor}40` }}>{unit.id}</div>
+                  <div>
+                    <h2 style={{ fontFamily: "Poppins, sans-serif", fontSize: isMobile ? 20 : 26, fontWeight: 800, color: "#1a1a2e", margin: 0 }}>{unit.title}</h2>
+                    <span style={{ fontFamily: "Poppins, sans-serif", fontSize: 13, color: "#888" }}>
+                      {unit.summary}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 13, color: "#888", margin: "0 0 16px", fontWeight: 500 }}>
+                Follow the progression below — or jump to any module.
+              </p>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {MODULES.map((m, i) => (
+                  <button key={m.id} onClick={() => setSelectedModule(m.id)} style={{
+                    background: "#fff", borderRadius: 16, border: "1.5px solid #eee",
+                    padding: isMobile ? "16px 14px" : "18px 20px", cursor: "pointer", textAlign: "left",
+                    transition: "all 0.2s", display: "flex", alignItems: "center", gap: 14,
+                    width: "100%"
+                  }}>
+                    <div style={{
+                      width: 44, height: 44, borderRadius: 12,
+                      background: `${unitColor}12`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 22, flexShrink: 0, position: "relative"
+                    }}>
+                      {m.icon}
+                      <div style={{
+                        position: "absolute", top: -6, left: -6,
+                        width: 20, height: 20, borderRadius: "50%",
+                        background: unitColor, color: "#fff",
+                        fontSize: 10, fontWeight: 800, display: "flex",
+                        alignItems: "center", justifyContent: "center",
+                        fontFamily: "Poppins, sans-serif"
+                      }}>{i + 1}</div>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontFamily: "Poppins, sans-serif", fontSize: 15, fontWeight: 700, color: "#1a1a2e" }}>{m.label}</div>
+                      <div style={{ fontFamily: "Poppins, sans-serif", fontSize: 12, color: "#888", marginTop: 2 }}>
+                        {m.desc}
+                      </div>
+                    </div>
+                    <div style={{
+                      fontFamily: "Poppins, sans-serif", fontSize: 10, fontWeight: 700,
+                      color: unitColor, background: `${unitColor}12`,
+                      padding: "3px 10px", borderRadius: 6,
+                      textTransform: "uppercase", letterSpacing: 0.5
+                    }}>
+                      {m.step}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* MODULE VIEW */}
+          {selectedUnit !== null && selectedUnit !== "cumulative" && selectedModule !== null && unit && (() => {
+            const Comp = MODULES.find(m => m.id === selectedModule)?.comp;
+            return Comp ? (
+              <div>
+                <Comp vocab={unit.vocab} unitColor={unitColor} />
+                <ModuleBottomNav currentModuleId={selectedModule} unitColor={unitColor} onNavigate={setSelectedModule} />
+              </div>
+            ) : null;
+          })()}
+
+          {/* CUMULATIVE */}
+          {selectedUnit === "cumulative" && (
+            <CumulativeReview units={UNITS} activeUnitIds={UNITS.map(u => u.id)} />
+          )}
+        </div>
+      </main>
+    </div>
+  );
+}
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(App));
+  </script>
+</body>
+</html>
