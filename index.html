@@ -1340,7 +1340,7 @@ function MultipleChoice({ vocab, unitColor }) {
               return (
                 <button key={i} onClick={() => handleSelect(opt, i)} style={{
                   ...matchCard, borderColor: border, background: bg, color: txtColor,
-                  textAlign: "left", fontSize: 14, lineHeight: 1.5, padding: "14px 16px",
+                  textAlign: "left", fontSize: 16, lineHeight: 1.5, padding: "14px 16px",
                   cursor: selected !== null ? "default" : "pointer"
                 }}>
                   <span style={{ fontWeight: 700, marginRight: 10, color: border !== "#ddd" ? border : unitColor }}>
@@ -1395,12 +1395,12 @@ function ELI5({ vocab, unitColor }) {
               <span style={{ fontFamily: "Poppins, sans-serif", fontSize: 18, fontWeight: 700, color: "#1a1a2e" }}>{v.term}</span>
             </div>
             <div style={{ background: `${unitColor}08`, borderRadius: 12, padding: "14px 16px", borderLeft: `4px solid ${unitColor}`, marginBottom: 12 }}>
-              <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 15, color: "#333", lineHeight: 1.6, margin: 0 }}>
+              <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 16, color: "#333", lineHeight: 1.6, margin: 0 }}>
                 <strong style={{ color: unitColor }}>ELI5:</strong> {v.eli5}
               </p>
             </div>
             <div style={{ background: "#f8f9fa", borderRadius: 12, padding: "14px 16px" }}>
-              <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 13, color: "#666", lineHeight: 1.5, margin: 0 }}>
+              <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 16, color: "#666", lineHeight: 1.5, margin: 0 }}>
                 <strong style={{ color: "#444" }}>Formal:</strong> {v.definition}
               </p>
             </div>
@@ -1423,11 +1423,11 @@ function Examples({ vocab, unitColor }) {
           <div style={{ padding: "16px 18px" }}>
             <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 10 }}>
               <span style={{ fontSize: 18, flexShrink: 0, marginTop: 1 }}>📖</span>
-              <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 13, color: "#555", lineHeight: 1.55, margin: 0 }}>{v.definition}</p>
+              <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 16, color: "#555", lineHeight: 1.55, margin: 0 }}>{v.definition}</p>
             </div>
             <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: "#FFF9E6", borderRadius: 10, padding: "10px 12px" }}>
               <span style={{ fontSize: 18, flexShrink: 0, marginTop: 1 }}>💡</span>
-              <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 13, color: "#7A6200", lineHeight: 1.55, margin: 0 }}>{v.example}</p>
+              <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 16, color: "#7A6200", lineHeight: 1.55, margin: 0 }}>{v.example}</p>
             </div>
           </div>
         </div>
@@ -1519,7 +1519,7 @@ function MasterQuiz({ vocab }) {
 
       {!started && (
         <div style={{ background: "#f8f9fb", borderRadius: 14, padding: "16px 18px", border: "1.5px solid #eee" }}>
-          <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 13, color: "#666", lineHeight: 1.6, margin: 0 }}>
+          <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 16, color: "#666", lineHeight: 1.6, margin: 0 }}>
             Choose any multiple of 5. The quiz will pull a fresh random set from all units each time.
           </p>
         </div>
@@ -1555,7 +1555,7 @@ function MasterQuiz({ vocab }) {
               return (
                 <button key={i} onClick={() => handleSelect(opt, i)} style={{
                   ...matchCard, borderColor: border, background: bg, color: txtColor,
-                  textAlign: "left", fontSize: 13, lineHeight: 1.5, padding: "14px 16px",
+                  textAlign: "left", fontSize: 16, lineHeight: 1.5, padding: "14px 16px",
                   cursor: selected !== null ? "default" : "pointer"
                 }}>
                   <span style={{ fontWeight: 800, marginRight: 10, color: border !== "#ddd" ? border : current.unitColor }}>
@@ -1583,7 +1583,7 @@ function MasterQuiz({ vocab }) {
           <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 22, fontWeight: 800, color: "#1a1a2e", margin: 0 }}>
             Final Score: {score}/{questions.length}
           </p>
-          <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 13, color: "#888", margin: "6px 0 18px" }}>
+          <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 16, color: "#888", margin: "6px 0 18px" }}>
             {Math.round((score / questions.length) * 100)}% · Generate a new random quiz whenever you are ready.
           </p>
           <button onClick={generateQuiz} style={{ ...pillBtn, background: "#1a1a2e", color: "#fff", padding: "10px 32px" }}>Try Another Random Quiz</button>
@@ -1624,7 +1624,7 @@ function CumulativeReview({ units, activeUnitIds }) {
                 <span style={{ fontFamily: "Poppins, sans-serif", fontSize: 15, fontWeight: 700, color: "#1a1a2e" }}>{v.term}</span>
                 <span style={{ fontFamily: "Poppins, sans-serif", fontSize: 10, fontWeight: 600, color: v.unitColor, background: `${v.unitColor}15`, padding: "2px 8px", borderRadius: 6 }}>Unit {v.unitId}</span>
               </div>
-              <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 13, color: "#666", lineHeight: 1.5, margin: 0 }}>{v.definition}</p>
+              <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 16, color: "#666", lineHeight: 1.5, margin: 0 }}>{v.definition}</p>
             </div>
           </div>
         ))}
@@ -1741,24 +1741,71 @@ const MODULES = [
   { id: "quiz", label: "Quiz", icon: "✅", comp: MultipleChoice, desc: "10-question multiple choice challenge", step: "Test" },
 ];
 
+// Validate shared links before choosing a study view.
+function readStudyRoute(search = window.location.search) {
+  const params = new URLSearchParams(search);
+  const value = params.get("unit");
+  const unitId = value === "cumulative" ? value : UNITS.find(u => String(u.id) === value)?.id ?? null;
+  const mode = params.get("mode");
+  const moduleId = typeof unitId === "number" && MODULES.some(m => m.id === mode) ? mode : null;
+  return { unitId, moduleId };
+}
+
+function studyUrl(unitId, moduleId, href = window.location.href) {
+  const url = new URL(href);
+  url.searchParams.delete("unit");
+  url.searchParams.delete("mode");
+  if (unitId !== null) url.searchParams.set("unit", unitId);
+  if (moduleId !== null && typeof unitId === "number") url.searchParams.set("mode", moduleId);
+  return url.pathname + url.search + url.hash;
+}
+
 // ─── MAIN APP ────────────────────────────────────────────────────────────────
 function App() {
-  const [selectedUnit, setSelectedUnit] = useState(null);
-  const [selectedModule, setSelectedModule] = useState(null);
+  const [route, setRoute] = useState(() => readStudyRoute());
+  const { unitId: selectedUnit, moduleId: selectedModule } = route;
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [practiceRun, setPracticeRun] = useState(0);
-  const startPractice = (unitId, moduleId) => {
-    setSelectedUnit(unitId);
-    setSelectedModule(moduleId);
-    setPracticeRun(run => run + 1);
-    if (isMobile) setSidebarOpen(false);
+  const focusStudy = () => {
     window.requestAnimationFrame(() => {
       const content = document.getElementById("study-content");
       content?.focus({ preventScroll: true });
       window.scrollTo({ top: 0, behavior: "auto" });
     });
   };
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+  const navigate = (unitId, moduleId = null) => {
+    const target = studyUrl(unitId, moduleId);
+    if (target !== window.location.pathname + window.location.search + window.location.hash) {
+      window.history.pushState(null, "", target);
+    }
+    setRoute({ unitId, moduleId });
+    setPracticeRun(run => run + 1);
+    if (isMobile) setSidebarOpen(false);
+    focusStudy();
+  };
+  const startPractice = navigate;
+
+  useEffect(() => {
+    const initial = readStudyRoute();
+    window.history.replaceState(window.history.state, "", studyUrl(initial.unitId, initial.moduleId));
+    const restore = () => {
+      setRoute(readStudyRoute());
+      setPracticeRun(run => run + 1);
+      if (window.innerWidth < 768) setSidebarOpen(false);
+      focusStudy();
+    };
+    window.addEventListener("popstate", restore);
+    return () => window.removeEventListener("popstate", restore);
+  }, []);
+
+  useEffect(() => {
+    const currentUnit = UNITS.find(u => u.id === selectedUnit);
+    const currentMode = MODULES.find(m => m.id === selectedModule);
+    document.title = currentUnit
+      ? `Unit ${currentUnit.id}: ${currentUnit.title}${currentMode ? " | " + currentMode.label : ""} | AP Business Vocabulary`
+      : selectedUnit === "cumulative" ? "Cumulative Review | AP Business Vocabulary" : "AP Business Vocabulary Hub — Mr. D's Class";
+  }, [selectedUnit, selectedModule]);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -1792,7 +1839,7 @@ function App() {
         transform: isMobile && !sidebarOpen ? "translateX(-100%)" : "translateX(0)"
       }}>
         <div style={{ padding: "24px 20px 16px", borderBottom: "1px solid #ffffff15" }}>
-          <div onClick={() => { setSelectedUnit(null); setSelectedModule(null); if (isMobile) setSidebarOpen(false); }} title="Back to home" style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, cursor: "pointer" }}>
+          <div onClick={() => { navigate(null); if (isMobile) setSidebarOpen(false); }} title="Back to home" style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, cursor: "pointer" }}>
             <VividIcon size={36} />
             <div>
               <div style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.2 }}>AP Business</div>
@@ -1815,7 +1862,7 @@ function App() {
 
           {UNITS.map(u => (
             <div key={u.id}>
-              <button onClick={() => { setSelectedUnit(u.id === selectedUnit && selectedModule === null ? null : u.id); setSelectedModule(null); if (isMobile) setSidebarOpen(false); }}
+              <button onClick={() => { navigate(u.id === selectedUnit && selectedModule === null ? null : u.id); if (isMobile) setSidebarOpen(false); }}
                 style={{
                   display: "flex", alignItems: "center", gap: 10, width: "100%",
                   padding: "10px 12px", borderRadius: 10, border: "none",
@@ -1832,7 +1879,7 @@ function App() {
               {selectedUnit === u.id && (
                 <div style={{ paddingLeft: 20, marginBottom: 8, marginTop: 4 }}>
                   {MODULES.map(m => (
-                    <button key={m.id} onClick={() => { setSelectedModule(m.id); if (isMobile) setSidebarOpen(false); }}
+                    <button key={m.id} onClick={() => { navigate(selectedUnit, m.id); if (isMobile) setSidebarOpen(false); }}
                       style={{
                         display: "flex", alignItems: "center", gap: 8, width: "100%",
                         padding: "7px 10px", borderRadius: 8, border: "none",
@@ -1855,7 +1902,7 @@ function App() {
 
           {/* Cumulative */}
           <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: 2, color: "#ffffff40", fontWeight: 700, padding: "0 8px", marginBottom: 10 }}>Cumulative</div>
-          <button onClick={() => { setSelectedUnit("cumulative"); setSelectedModule(null); if (isMobile) setSidebarOpen(false); }}
+          <button onClick={() => { navigate("cumulative"); if (isMobile) setSidebarOpen(false); }}
             style={{
               display: "flex", alignItems: "center", gap: 10, width: "100%",
               padding: "10px 12px", borderRadius: 10, border: "none",
@@ -1885,13 +1932,13 @@ function App() {
           }}>☰</button>
 
           {selectedUnit !== null && (
-            <button onClick={() => { setSelectedUnit(null); setSelectedModule(null); }} style={{
+            <button onClick={() => { navigate(null); }} style={{
               background: "none", border: "none", cursor: "pointer", fontSize: 18, padding: "4px 6px",
               color: "#888", display: "flex", alignItems: "center", fontFamily: "Poppins, sans-serif"
             }} title="Home">🏠</button>
           )}
 
-          <div onClick={() => { setSelectedUnit(null); setSelectedModule(null); }} title="Back to home" style={{ flex: 1, cursor: "pointer" }}>
+          <div onClick={() => { navigate(null); }} title="Back to home" style={{ flex: 1, cursor: "pointer" }}>
             <div style={{ fontSize: 15, fontWeight: 700, color: "#1a1a2e", fontFamily: "Poppins, sans-serif" }}>
               {selectedUnit === "cumulative" ? "Cumulative Review" : unit ? `Unit ${unit.id}: ${unit.title}` : "AP Business · Vocabulary Hub"}
             </div>
@@ -1910,7 +1957,7 @@ function App() {
               {/* HERO */}
               <div style={{
                 background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
-                borderRadius: 24, padding: isMobile ? "32px 20px" : "48px 44px",
+                borderRadius: 24, padding: isMobile ? "24px 20px" : "32px 36px",
                 marginBottom: 32, position: "relative", overflow: "hidden"
               }}>
                 {/* Decorative circles */}
@@ -1929,14 +1976,14 @@ function App() {
                   </div>
 
                   <h1 style={{
-                    fontFamily: "Poppins, sans-serif", fontSize: isMobile ? 30 : 42, fontWeight: 900,
+                    fontFamily: "Poppins, sans-serif", fontSize: isMobile ? 28 : 36, fontWeight: 900,
                     color: "#fff", margin: "0 0 8px", lineHeight: 1.15,
                     letterSpacing: "-0.5px"
                   }}>
                     AP Business with<br />Personal Finance
                   </h1>
                   <h2 style={{
-                    fontFamily: "Poppins, sans-serif", fontSize: isMobile ? 18 : 24, fontWeight: 700,
+                    fontFamily: "Poppins, sans-serif", fontSize: isMobile ? 18 : 20, fontWeight: 700,
                     color: "#009CDC", margin: "0 0 16px"
                   }}>
                     Vocabulary Mastery Hub
@@ -2022,7 +2069,7 @@ function App() {
 
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                   {UNITS.map(u => (
-                    <button key={u.id} onClick={() => setSelectedUnit(u.id)} style={{
+                    <button key={u.id} onClick={() => navigate(u.id)} style={{
                       background: "#fff", borderRadius: 20, border: "1.5px solid #eee",
                       padding: isMobile ? 18 : 24, cursor: "pointer", textAlign: "left",
                       transition: "all 0.2s", display: "flex", flexDirection: "column", gap: 14,
@@ -2077,7 +2124,7 @@ function App() {
               </div>
 
               {/* CUMULATIVE REVIEW CARD */}
-              <button onClick={() => setSelectedUnit("cumulative")} style={{
+              <button onClick={() => navigate("cumulative")} style={{
                 width: "100%", background: "linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)",
                 borderRadius: 20, border: "none", padding: isMobile ? "24px 20px" : "28px 32px",
                 cursor: "pointer", textAlign: "left", color: "#fff", marginBottom: 32,
@@ -2143,7 +2190,7 @@ function App() {
                 <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 8, position: "relative", zIndex: 1 }}>
                   <div style={{ width: 52, height: 52, borderRadius: 14, background: unitColor, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 900, color: "#fff", boxShadow: `0 4px 14px ${unitColor}40` }}>{unit.id}</div>
                   <div>
-                    <h2 style={{ fontFamily: "Poppins, sans-serif", fontSize: isMobile ? 20 : 26, fontWeight: 800, color: "#1a1a2e", margin: 0 }}>{unit.title}</h2>
+                    <h2 style={{ fontFamily: "Poppins, sans-serif", fontSize: isMobile ? 20 : 24, fontWeight: 800, color: "#1a1a2e", margin: 0 }}>{unit.title}</h2>
                     <span style={{ fontFamily: "Poppins, sans-serif", fontSize: 13, color: "#888" }}>
                       {unit.summary}
                     </span>
@@ -2157,7 +2204,7 @@ function App() {
 
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {MODULES.map((m, i) => (
-                  <button key={m.id} onClick={() => setSelectedModule(m.id)} style={{
+                  <button key={m.id} onClick={() => navigate(selectedUnit, m.id)} style={{
                     background: "#fff", borderRadius: 16, border: "1.5px solid #eee",
                     padding: isMobile ? "16px 14px" : "18px 20px", cursor: "pointer", textAlign: "left",
                     transition: "all 0.2s", display: "flex", alignItems: "center", gap: 14,
@@ -2205,7 +2252,7 @@ function App() {
             return Comp ? (
               <div>
                 <Comp key={`${unit.id}-${selectedModule}-${practiceRun}`} vocab={unit.vocab} unitColor={unitColor} />
-                <ModuleBottomNav currentModuleId={selectedModule} unitColor={unitColor} onNavigate={setSelectedModule} />
+                <ModuleBottomNav currentModuleId={selectedModule} unitColor={unitColor} onNavigate={moduleId => navigate(selectedUnit, moduleId)} />
               </div>
             ) : null;
           })()}
