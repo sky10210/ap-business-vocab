@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AP Business Vocabulary Hub — Mr. D's Class</title>
+  <meta name="description" content="Study AP Business with Personal Finance vocabulary for free with unit-by-unit definitions, real-world examples, flashcards, matching games, and practice quizzes." />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%232563EB'/%3E%3Cstop offset='1' stop-color='%2322D3EE'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='48' height='48' rx='18' fill='url(%23g)'/%3E%3Cpath d='M10 17 L22 29 L38 13' fill='none' stroke='white' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M18 18 L24 24 L33 15' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' opacity='.96'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -13,6 +14,8 @@
     body { font-family: 'Poppins', sans-serif; -webkit-font-smoothing: antialiased; }
     button { font-family: inherit; }
     input { font-family: inherit; }
+    a.study-link { font-family: inherit; font-size: inherit; line-height: normal; color: inherit; text-decoration: none; }
+    a.study-link:focus-visible { outline: 3px solid #009CDC; outline-offset: 3px; }
     .practice-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
     .practice-action:hover { background: #F5F6FA !important; }
     .practice-action:focus-visible { outline: 3px solid #1a1a2e; outline-offset: 3px; }
@@ -1654,8 +1657,21 @@ const matchCard = {
   lineHeight: 1.4, display: "block", width: "100%"
 };
 
+// Real links support crawlers, copying addresses, and opening study views in a new tab.
+function StudyLink({ href, onClick, children, className = "", style, ...props }) {
+  if (!href) return <button {...props} className={className} style={style} onClick={onClick}>{children}</button>;
+  const follow = event => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (onClick) {
+      event.preventDefault();
+      onClick(event);
+    }
+  };
+  return <a {...props} href={href} className={`study-link ${className}`} style={style} onClick={follow}>{children}</a>;
+}
+
 // ─── MODULE BOTTOM NAV ───────────────────────────────────────────────────────
-function ModuleBottomNav({ currentModuleId, unitColor, onNavigate }) {
+function ModuleBottomNav({ currentModuleId, currentUnitId, unitColor, onNavigate }) {
   const currentIdx = MODULES.findIndex(m => m.id === currentModuleId);
   const nextModule = currentIdx < MODULES.length - 1 ? MODULES[currentIdx + 1] : null;
   const prevModule = currentIdx > 0 ? MODULES[currentIdx - 1] : null;
@@ -1679,24 +1695,24 @@ function ModuleBottomNav({ currentModuleId, unitColor, onNavigate }) {
 
       <div style={{ display: "flex", gap: 10, width: "100%", maxWidth: 340 }}>
         {prevModule && (
-          <button onClick={() => { onNavigate(prevModule.id); scrollToTop(); }} style={{
+          <StudyLink href={studyUrl(currentUnitId, prevModule.id)} onClick={() => { onNavigate(prevModule.id); scrollToTop(); }} style={{
             flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
             background: "#fff", border: `1.5px solid ${unitColor}30`, borderRadius: 12,
             padding: "10px 14px", cursor: "pointer", fontFamily: "Poppins, sans-serif",
             fontSize: 12, fontWeight: 600, color: unitColor, transition: "all 0.2s"
           }}>
             <span>←</span> {prevModule.icon} {prevModule.label}
-          </button>
+          </StudyLink>
         )}
         {nextModule && (
-          <button onClick={() => { onNavigate(nextModule.id); scrollToTop(); }} style={{
+          <StudyLink href={studyUrl(currentUnitId, nextModule.id)} onClick={() => { onNavigate(nextModule.id); scrollToTop(); }} style={{
             flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
             background: unitColor, border: "none", borderRadius: 12,
             padding: "10px 14px", cursor: "pointer", fontFamily: "Poppins, sans-serif",
             fontSize: 12, fontWeight: 600, color: "#fff", transition: "all 0.2s"
           }}>
             {nextModule.icon} {nextModule.label} <span>→</span>
-          </button>
+          </StudyLink>
         )}
       </div>
     </div>
@@ -1711,9 +1727,9 @@ function KeepPracticing({ unit, onPractice }) {
   const nextUnit = availableUnits[(currentIndex + 1) % availableUnits.length];
   const nextLabel = currentIndex === availableUnits.length - 1 ? "Review Unit " : "Study Unit ";
   const actions = [
-    { label: "Take a 10-Question Quiz", detail: `Test your Unit ${studyUnit.id} vocabulary.`, icon: "✅", run: () => onPractice(studyUnit.id, "quiz") },
-    { label: "Quick Flashcards", detail: `Review Unit ${studyUnit.id} at your own pace.`, icon: "🃏", run: () => onPractice(studyUnit.id, "flashcards") },
-    { label: `${nextLabel}${nextUnit.id}`, detail: nextUnit.title, icon: "📚", run: () => onPractice(nextUnit.id, null) },
+    { label: "Take a 10-Question Quiz", detail: `Test your Unit ${studyUnit.id} vocabulary.`, icon: "✅", href: studyUrl(studyUnit.id, "quiz"), run: () => onPractice(studyUnit.id, "quiz") },
+    { label: "Quick Flashcards", detail: `Review Unit ${studyUnit.id} at your own pace.`, icon: "🃏", href: studyUrl(studyUnit.id, "flashcards"), run: () => onPractice(studyUnit.id, "flashcards") },
+    { label: `${nextLabel}${nextUnit.id}`, detail: nextUnit.title, icon: "📚", href: studyUrl(nextUnit.id, null), run: () => onPractice(nextUnit.id, null) },
     { label: "Random Vocabulary Challenge", detail: "Match six terms from a randomly selected unit.", icon: "🎯", run: () => onPractice(availableUnits[Math.floor(Math.random() * availableUnits.length)].id, "matching") },
   ];
   return (
@@ -1722,10 +1738,10 @@ function KeepPracticing({ unit, onPractice }) {
       <p style={{ fontSize: 16, color: "#595969", marginBottom: 18 }}>What do you want to do next?</p>
       <div className="practice-actions">
         {actions.map(action => (
-          <button key={action.label} className="practice-action" onClick={action.run} style={{ padding: 18, background: "#fff", border: `1.5px solid ${studyUnit.color}40`, borderRadius: 14, textAlign: "left", cursor: "pointer", color: "#1a1a2e", minWidth: 0 }}>
+          <StudyLink href={action.href} key={action.label} className="practice-action" onClick={action.run} style={{ padding: 18, background: "#fff", border: `1.5px solid ${studyUnit.color}40`, borderRadius: 14, textAlign: "left", cursor: "pointer", color: "#1a1a2e", minWidth: 0 }}>
             <span style={{ display: "block", fontSize: 16, fontWeight: 700 }}><span aria-hidden="true">{action.icon} </span>{action.label}</span>
             <span style={{ display: "block", fontSize: 14, lineHeight: 1.6, color: "#595969", marginTop: 6 }}>{action.detail}</span>
-          </button>
+          </StudyLink>
         ))}
       </div>
     </section>
@@ -1805,6 +1821,12 @@ function App() {
     document.title = currentUnit
       ? `Unit ${currentUnit.id}: ${currentUnit.title}${currentMode ? " | " + currentMode.label : ""} | AP Business Vocabulary`
       : selectedUnit === "cumulative" ? "Cumulative Review | AP Business Vocabulary" : "AP Business Vocabulary Hub — Mr. D's Class";
+    const description = currentUnit
+      ? `Study AP Business Unit ${currentUnit.id}: ${currentUnit.title}. ${currentMode ? currentMode.desc + "." : "Explore vocabulary definitions, examples, flashcards, matching games, and quizzes."} Free study practice.`
+      : selectedUnit === "cumulative"
+        ? "Review AP Business with Personal Finance vocabulary across all units. Search definitions and test your knowledge with a free randomized practice quiz."
+        : "Study AP Business with Personal Finance vocabulary for free with unit-by-unit definitions, real-world examples, flashcards, matching games, and practice quizzes.";
+    document.querySelector('meta[name="description"]').setAttribute("content", description);
   }, [selectedUnit, selectedModule]);
 
   useEffect(() => {
@@ -1862,7 +1884,7 @@ function App() {
 
           {UNITS.map(u => (
             <div key={u.id}>
-              <button onClick={() => { navigate(u.id === selectedUnit && selectedModule === null ? null : u.id); if (isMobile) setSidebarOpen(false); }}
+              <StudyLink href={studyUrl(u.id, null)} onClick={() => { navigate(u.id); if (isMobile) setSidebarOpen(false); }}
                 style={{
                   display: "flex", alignItems: "center", gap: 10, width: "100%",
                   padding: "10px 12px", borderRadius: 10, border: "none",
@@ -1874,12 +1896,12 @@ function App() {
                 }}>
                 <div style={{ width: 28, height: 28, borderRadius: 8, background: u.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: "#fff", flexShrink: 0 }}>{u.id}</div>
                 <span style={{ lineHeight: 1.3 }}>{u.title}</span>
-              </button>
+              </StudyLink>
 
               {selectedUnit === u.id && (
                 <div style={{ paddingLeft: 20, marginBottom: 8, marginTop: 4 }}>
                   {MODULES.map(m => (
-                    <button key={m.id} onClick={() => { navigate(selectedUnit, m.id); if (isMobile) setSidebarOpen(false); }}
+                    <StudyLink href={studyUrl(selectedUnit, m.id)} key={m.id} onClick={() => { navigate(selectedUnit, m.id); if (isMobile) setSidebarOpen(false); }}
                       style={{
                         display: "flex", alignItems: "center", gap: 8, width: "100%",
                         padding: "7px 10px", borderRadius: 8, border: "none",
@@ -1891,7 +1913,7 @@ function App() {
                       }}>
                       <span>{m.icon}</span>
                       <span>{m.label}</span>
-                    </button>
+                    </StudyLink>
                   ))}
                 </div>
               )}
@@ -1902,7 +1924,7 @@ function App() {
 
           {/* Cumulative */}
           <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: 2, color: "#ffffff40", fontWeight: 700, padding: "0 8px", marginBottom: 10 }}>Cumulative</div>
-          <button onClick={() => { navigate("cumulative"); if (isMobile) setSidebarOpen(false); }}
+          <StudyLink href={studyUrl("cumulative", null)} onClick={() => { navigate("cumulative"); if (isMobile) setSidebarOpen(false); }}
             style={{
               display: "flex", alignItems: "center", gap: 10, width: "100%",
               padding: "10px 12px", borderRadius: 10, border: "none",
@@ -1914,7 +1936,7 @@ function App() {
             }}>
             <div style={{ width: 28, height: 28, borderRadius: 8, background: "linear-gradient(135deg, #009CDC, #F5822A)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>∑</div>
             <span>All Vocabulary</span>
-          </button>
+          </StudyLink>
         </div>
 
         <div style={{ padding: "12px 16px", borderTop: "1px solid #ffffff10", fontSize: 10, color: "#ffffff45", textAlign: "center", lineHeight: 1.5 }}>
@@ -1932,10 +1954,10 @@ function App() {
           }}>☰</button>
 
           {selectedUnit !== null && (
-            <button onClick={() => { navigate(null); }} style={{
+            <StudyLink href={studyUrl(null, null)} onClick={() => { navigate(null); }} style={{
               background: "none", border: "none", cursor: "pointer", fontSize: 18, padding: "4px 6px",
               color: "#888", display: "flex", alignItems: "center", fontFamily: "Poppins, sans-serif"
-            }} title="Home">🏠</button>
+            }} title="Home">🏠</StudyLink>
           )}
 
           <div onClick={() => { navigate(null); }} title="Back to home" style={{ flex: 1, cursor: "pointer" }}>
@@ -2069,7 +2091,7 @@ function App() {
 
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                   {UNITS.map(u => (
-                    <button key={u.id} onClick={() => navigate(u.id)} style={{
+                    <StudyLink href={studyUrl(u.id, null)} key={u.id} onClick={() => navigate(u.id)} style={{
                       background: "#fff", borderRadius: 20, border: "1.5px solid #eee",
                       padding: isMobile ? 18 : 24, cursor: "pointer", textAlign: "left",
                       transition: "all 0.2s", display: "flex", flexDirection: "column", gap: 14,
@@ -2118,13 +2140,13 @@ function App() {
                           </span>
                         ))}
                       </div>
-                    </button>
+                    </StudyLink>
                   ))}
                 </div>
               </div>
 
               {/* CUMULATIVE REVIEW CARD */}
-              <button onClick={() => navigate("cumulative")} style={{
+              <StudyLink href={studyUrl("cumulative", null)} onClick={() => navigate("cumulative")} style={{
                 width: "100%", background: "linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)",
                 borderRadius: 20, border: "none", padding: isMobile ? "24px 20px" : "28px 32px",
                 cursor: "pointer", textAlign: "left", color: "#fff", marginBottom: 32,
@@ -2145,7 +2167,7 @@ function App() {
                     </div>
                   </div>
                 </div>
-              </button>
+              </StudyLink>
 
               {/* COURSE INFO FOOTER */}
               <div style={{
@@ -2204,7 +2226,7 @@ function App() {
 
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {MODULES.map((m, i) => (
-                  <button key={m.id} onClick={() => navigate(selectedUnit, m.id)} style={{
+                  <StudyLink href={studyUrl(selectedUnit, m.id)} key={m.id} onClick={() => navigate(selectedUnit, m.id)} style={{
                     background: "#fff", borderRadius: 16, border: "1.5px solid #eee",
                     padding: isMobile ? "16px 14px" : "18px 20px", cursor: "pointer", textAlign: "left",
                     transition: "all 0.2s", display: "flex", alignItems: "center", gap: 14,
@@ -2240,7 +2262,7 @@ function App() {
                     }}>
                       {m.step}
                     </div>
-                  </button>
+                  </StudyLink>
                 ))}
               </div>
             </div>
@@ -2252,7 +2274,7 @@ function App() {
             return Comp ? (
               <div>
                 <Comp key={`${unit.id}-${selectedModule}-${practiceRun}`} vocab={unit.vocab} unitColor={unitColor} />
-                <ModuleBottomNav currentModuleId={selectedModule} unitColor={unitColor} onNavigate={moduleId => navigate(selectedUnit, moduleId)} />
+                <ModuleBottomNav currentUnitId={selectedUnit} currentModuleId={selectedModule} unitColor={unitColor} onNavigate={moduleId => navigate(selectedUnit, moduleId)} />
               </div>
             ) : null;
           })()}
