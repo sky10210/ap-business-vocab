@@ -13,6 +13,10 @@
     body { font-family: 'Poppins', sans-serif; -webkit-font-smoothing: antialiased; }
     button { font-family: inherit; }
     input { font-family: inherit; }
+    .practice-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .practice-action:hover { background: #F5F6FA !important; }
+    .practice-action:focus-visible { outline: 3px solid #1a1a2e; outline-offset: 3px; }
+    @media (max-width: 540px) { .practice-actions { grid-template-columns: 1fr; } }
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
@@ -1699,6 +1703,35 @@ function ModuleBottomNav({ currentModuleId, unitColor, onNavigate }) {
   );
 }
 
+// Student next steps reuse the existing study activities.
+function KeepPracticing({ unit, onPractice }) {
+  const availableUnits = UNITS.filter(u => u.vocab.length > 0);
+  const currentIndex = availableUnits.findIndex(u => u.id === unit?.id);
+  const studyUnit = unit || availableUnits[0];
+  const nextUnit = availableUnits[(currentIndex + 1) % availableUnits.length];
+  const nextLabel = currentIndex === availableUnits.length - 1 ? "Review Unit " : "Study Unit ";
+  const actions = [
+    { label: "Take a 10-Question Quiz", detail: `Test your Unit ${studyUnit.id} vocabulary.`, icon: "✅", run: () => onPractice(studyUnit.id, "quiz") },
+    { label: "Quick Flashcards", detail: `Review Unit ${studyUnit.id} at your own pace.`, icon: "🃏", run: () => onPractice(studyUnit.id, "flashcards") },
+    { label: `${nextLabel}${nextUnit.id}`, detail: nextUnit.title, icon: "📚", run: () => onPractice(nextUnit.id, null) },
+    { label: "Random Vocabulary Challenge", detail: "Match six terms from a randomly selected unit.", icon: "🎯", run: () => onPractice(availableUnits[Math.floor(Math.random() * availableUnits.length)].id, "matching") },
+  ];
+  return (
+    <section aria-labelledby="keep-practicing-title" style={{ marginTop: 32, paddingTop: 24, borderTop: "1.5px solid #e0e0e0" }}>
+      <h2 id="keep-practicing-title" style={{ fontSize: 22, color: "#1a1a2e", marginBottom: 8 }}>Keep Practicing AP Business</h2>
+      <p style={{ fontSize: 16, color: "#595969", marginBottom: 18 }}>What do you want to do next?</p>
+      <div className="practice-actions">
+        {actions.map(action => (
+          <button key={action.label} className="practice-action" onClick={action.run} style={{ padding: 18, background: "#fff", border: `1.5px solid ${studyUnit.color}40`, borderRadius: 14, textAlign: "left", cursor: "pointer", color: "#1a1a2e", minWidth: 0 }}>
+            <span style={{ display: "block", fontSize: 16, fontWeight: 700 }}><span aria-hidden="true">{action.icon} </span>{action.label}</span>
+            <span style={{ display: "block", fontSize: 14, lineHeight: 1.6, color: "#595969", marginTop: 6 }}>{action.detail}</span>
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 // ─── NAV ITEMS ───────────────────────────────────────────────────────────────
 const MODULES = [
   { id: "examples", label: "Examples", icon: "💡", comp: Examples, desc: "Real-world examples for every term", step: "Learn" },
@@ -1713,6 +1746,18 @@ function App() {
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [selectedModule, setSelectedModule] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [practiceRun, setPracticeRun] = useState(0);
+  const startPractice = (unitId, moduleId) => {
+    setSelectedUnit(unitId);
+    setSelectedModule(moduleId);
+    setPracticeRun(run => run + 1);
+    if (isMobile) setSidebarOpen(false);
+    window.requestAnimationFrame(() => {
+      const content = document.getElementById("study-content");
+      content?.focus({ preventScroll: true });
+      window.scrollTo({ top: 0, behavior: "auto" });
+    });
+  };
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -1831,7 +1876,7 @@ function App() {
       </aside>
 
       {/* ─── MAIN CONTENT ────────────────────────────────────────────────── */}
-      <main style={{ flex: 1, minWidth: 0 }}>
+      <main id="study-content" tabIndex={-1} style={{ flex: 1, minWidth: 0 }}>
         {/* TOP BAR */}
         <header style={{ background: "#fff", borderBottom: "1.5px solid #eee", padding: "12px 20px", display: "flex", alignItems: "center", gap: 12, position: "sticky", top: 0, zIndex: 50 }}>
           <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{
@@ -2159,7 +2204,7 @@ function App() {
             const Comp = MODULES.find(m => m.id === selectedModule)?.comp;
             return Comp ? (
               <div>
-                <Comp vocab={unit.vocab} unitColor={unitColor} />
+                <Comp key={`${unit.id}-${selectedModule}-${practiceRun}`} vocab={unit.vocab} unitColor={unitColor} />
                 <ModuleBottomNav currentModuleId={selectedModule} unitColor={unitColor} onNavigate={setSelectedModule} />
               </div>
             ) : null;
@@ -2168,6 +2213,9 @@ function App() {
           {/* CUMULATIVE */}
           {selectedUnit === "cumulative" && (
             <CumulativeReview units={UNITS} activeUnitIds={UNITS.map(u => u.id)} />
+          )}
+          {(unit || selectedUnit === "cumulative") && (
+            <KeepPracticing unit={unit} onPractice={startPractice} />
           )}
         </div>
       </main>
