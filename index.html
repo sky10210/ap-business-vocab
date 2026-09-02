@@ -1777,6 +1777,32 @@ function studyUrl(unitId, moduleId, href = window.location.href) {
   return url.pathname + url.search + url.hash;
 }
 
+function CopyStudentLink({ unitId, moduleId }) {
+  const [status, setStatus] = useState("idle");
+  const link = new URL(studyUrl(unitId, moduleId, "https://apbusinessvocab.com/"), "https://apbusinessvocab.com/").href;
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(link);
+      setStatus("copied");
+    } catch {
+      setStatus("manual");
+    }
+  };
+  return (
+    <div style={{ marginBottom: 16, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
+      <button type="button" onClick={copy} style={{ padding: "10px 16px", minHeight: 44, border: "1.5px solid #cbd5e1", borderRadius: 10, background: "#fff", color: "#1a1a2e", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+        Copy Student Link
+      </button>
+      <span role="status" aria-live="polite" style={{ fontSize: 14, color: "#334155" }}>
+        {status === "copied" ? "Link copied!" : status === "manual" ? "Select and copy the link below." : ""}
+      </span>
+      {status === "manual" && (
+        <input aria-label="Student link" readOnly value={link} onFocus={event => event.target.select()} style={{ width: "100%", maxWidth: 520, padding: 12, fontSize: 16, border: "1px solid #94a3b8", borderRadius: 8, color: "#1a1a2e", background: "#fff" }} />
+      )}
+    </div>
+  );
+}
+
 // ─── MAIN APP ────────────────────────────────────────────────────────────────
 function App() {
   const [route, setRoute] = useState(() => readStudyRoute());
@@ -1974,6 +2000,9 @@ function App() {
         </header>
 
         <div style={{ padding: isMobile ? "20px 14px" : "28px 32px", maxWidth: 960, margin: "0 auto" }}>
+          {selectedUnit !== null && (
+            <CopyStudentLink key={`${selectedUnit}-${selectedModule}`} unitId={selectedUnit} moduleId={selectedModule} />
+          )}
           {/* HOME / LANDING */}
           {selectedUnit === null && (
             <div>
